@@ -1,0 +1,11 @@
+InvoiceNumber;CustomerName;CustomerBusinessId;IssueDate;DueDate;Status;CurrencyCode
+2026/0001;KROS a.s.;31635903;2026-01-10;2026-01-24;Paid;EUR
+2026/0002;Slovak Telekom, a.s.;35763469;2026-01-15;2026-01-29;Paid;EUR
+2026/0003;ESET, spol. s r.o.;31333532;2026-02-03;2026-02-17;Sent;EUR
+2026/0004;Tatra banka, a.s.;00686930;2026-02-12;2026-02-26;Overdue;EUR
+2026/0005;Lidl Slovenska republika, v.o.s.;35793783;2026-03-01;2026-03-15;Issued;EUR
+2026/0006;Kaufland Slovenska republika v.o.s.;35790164;2026-03-08;2026-03-22;Paid;EUR
+2026/0007;Orange Slovensko, a.s.;35697270;2026-03-20;2026-04-03;Sent;EUR
+2026/0008;O2 Slovakia, s.r.o.;35848863;2026-04-02;2026-04-16;Cancelled;EUR
+2026/0009;Zeleznice Slovenskej republiky;31364501;2026-04-15;2026-04-29;Paid;EUR
+2026/0010;Slovenska sporitelna, a.s.;00151653;2026-05-05;2026-05-19;Issued;EUR

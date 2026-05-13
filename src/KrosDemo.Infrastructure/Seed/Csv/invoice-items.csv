@@ -1,0 +1,21 @@
+Description;Unit;Quantity;UnitPrice;VatRate;InvoiceId
+Software architecture consulting;hour;16.00;65.00;23;1
+EF Core training for development team;hour;8.00;75.00;23;1
+Monthly SLA support package;pcs;1.00;450.00;23;2
+Database migration to cloud;hour;24.00;80.00;23;3
+REST API endpoint development;hour;40.00;70.00;23;3
+ESET Endpoint Security license (annual);pcs;50.00;42.00;23;3
+JWT authentication implementation;hour;12.00;75.00;23;4
+Code review and refactoring;hour;6.00;60.00;23;4
+ASP.NET Core Web API training;hour;16.00;90.00;23;5
+Technical documentation preparation;hour;10.00;55.00;23;5
+DevOps services and CI/CD setup;hour;20.00;85.00;10;6
+Azure DevOps pipeline configuration;hour;8.00;90.00;23;6
+AutoMapper profiles implementation;hour;4.00;65.00;23;7
+LINQ query optimization;hour;6.00;70.00;23;7
+Angular front-end component development;hour;30.00;65.00;23;8
+Swagger/NSwag documentation integration;hour;5.00;60.00;23;9
+Microservices consulting;hour;12.00;95.00;23;9
+Late delivery penalty;pcs;1.00;-150.00;0;9
+Monthly Cenkros Cloud Premium subscription;pcs;1.00;199.00;23;10
+Additional iKros licenses (5 users);pcs;5.00;15.00;23;10
