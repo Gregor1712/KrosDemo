@@ -1,6 +1,7 @@
 using AutoMapper;
 using KrosDemo.Application.DTOs;
-using KrosDemo.Application.Interfaces;
+using KrosDemo.Application.Repositories;
+using KrosDemo.Application.Services;
 
 namespace KrosDemo.Infrastructure.Services;
 

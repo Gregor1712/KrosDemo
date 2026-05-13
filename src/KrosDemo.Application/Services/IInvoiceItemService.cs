@@ -1,6 +1,6 @@
 using KrosDemo.Application.DTOs;
 
-namespace KrosDemo.Application.Interfaces;
+namespace KrosDemo.Application.Services;
 
 public interface IInvoiceItemService
 {

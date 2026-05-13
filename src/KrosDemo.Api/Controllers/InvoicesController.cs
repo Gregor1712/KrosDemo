@@ -4,8 +4,8 @@ using Microsoft.Net.Http.Headers;
 using KrosDemo.Api.Infrastructure;
 using KrosDemo.Application.DTOs;
 using KrosDemo.Application.Filters;
-using KrosDemo.Application.Interfaces;
 using KrosDemo.Application.RequestHelpers;
+using KrosDemo.Application.Services;
 
 namespace KrosDemo.Api.Controllers;
 

@@ -1,8 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using KrosDemo.Application.Interfaces;
+using KrosDemo.Application.Repositories;
 using KrosDemo.Domain.Entities;
+using KrosDemo.Infrastructure.Data;
 
-namespace KrosDemo.Infrastructure.Data;
+namespace KrosDemo.Infrastructure.Repositories;
 
 public class GenericRepository<T>(ApplicationDbContext context) : IGenericRepository<T> where T : BaseEntity
 {

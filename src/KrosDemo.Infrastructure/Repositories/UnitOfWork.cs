@@ -1,8 +1,9 @@
 using System.Collections.Concurrent;
-using KrosDemo.Application.Interfaces;
+using KrosDemo.Application.Repositories;
 using KrosDemo.Domain.Entities;
+using KrosDemo.Infrastructure.Data;
 
-namespace KrosDemo.Infrastructure.Data;
+namespace KrosDemo.Infrastructure.Repositories;
 
 public class UnitOfWork(ApplicationDbContext context) : IUnitOfWork
 {

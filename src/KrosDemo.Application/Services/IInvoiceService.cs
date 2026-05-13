@@ -2,7 +2,7 @@ using KrosDemo.Application.DTOs;
 using KrosDemo.Application.Filters;
 using KrosDemo.Application.RequestHelpers;
 
-namespace KrosDemo.Application.Interfaces;
+namespace KrosDemo.Application.Services;
 
 public interface IInvoiceService
 {

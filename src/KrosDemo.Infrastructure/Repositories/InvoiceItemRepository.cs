@@ -1,9 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using KrosDemo.Application.Exceptions;
-using KrosDemo.Application.Interfaces;
+using KrosDemo.Application.Repositories;
 using KrosDemo.Domain.Entities;
+using KrosDemo.Infrastructure.Data;
 
-namespace KrosDemo.Infrastructure.Data;
+namespace KrosDemo.Infrastructure.Repositories;
 
 public class InvoiceItemRepository : IInvoiceItemRepository
 {

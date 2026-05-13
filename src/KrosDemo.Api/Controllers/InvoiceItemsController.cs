@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Net.Http.Headers;
 using KrosDemo.Api.Infrastructure;
 using KrosDemo.Application.DTOs;
-using KrosDemo.Application.Interfaces;
+using KrosDemo.Application.Services;
 
 namespace KrosDemo.Api.Controllers;
 

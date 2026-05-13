@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using KrosDemo.Application.Interfaces;
 using KrosDemo.Domain.Entities;
 
-namespace KrosDemo.Infrastructure.Data;
+namespace KrosDemo.Infrastructure.Repositories;
 
 public class SpecificationEvaluator<T> where T : BaseEntity
 {

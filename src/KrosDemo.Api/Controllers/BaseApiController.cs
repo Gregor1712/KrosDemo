@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using KrosDemo.Application.Interfaces;
+using KrosDemo.Application.Repositories;
 using KrosDemo.Application.RequestHelpers;
 using KrosDemo.Domain.Entities;
 

@@ -5,8 +5,11 @@ using Microsoft.IdentityModel.Tokens;
 using KrosDemo.Api.Infrastructure;
 using KrosDemo.Application.Interfaces;
 using KrosDemo.Application.Mapping;
+using KrosDemo.Application.Repositories;
+using KrosDemo.Application.Services;
 using KrosDemo.Infrastructure.Data;
 using KrosDemo.Infrastructure.Identity;
+using KrosDemo.Infrastructure.Repositories;
 using KrosDemo.Infrastructure.Seed;
 using KrosDemo.Infrastructure.Services;
 

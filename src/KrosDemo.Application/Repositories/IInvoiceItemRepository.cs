@@ -1,6 +1,6 @@
 using KrosDemo.Domain.Entities;
 
-namespace KrosDemo.Application.Interfaces;
+namespace KrosDemo.Application.Repositories;
 
 public interface IInvoiceItemRepository
 {
