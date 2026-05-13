@@ -1,4 +1,3 @@
-using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Net.Http.Headers;
@@ -18,7 +17,6 @@ public class InvoiceItemsController : ControllerBase
     public async Task<ActionResult<InvoiceItemDTO>> UpdateInvoiceItem(
         int id,
         [FromServices] IInvoiceItemService service,
-        [FromServices] IMapper mapper,
         [FromBody] InvoiceItemUpdateDTO dto,
         CancellationToken cancellationToken)
     {
@@ -28,7 +26,7 @@ public class InvoiceItemsController : ControllerBase
 
         var updated = await service.UpdateInvoiceItemAsync(id, dto, rowVersion, cancellationToken);
         Response.Headers[HeaderNames.ETag] = ETag.Format(updated.RowVersion);
-        return Ok(mapper.Map<InvoiceItemDTO>(updated));
+        return Ok(updated);
     }
 
     [Authorize(Roles = "Admin")]

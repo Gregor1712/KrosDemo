@@ -1,31 +1,28 @@
-using Microsoft.EntityFrameworkCore;
+using AutoMapper;
 using KrosDemo.Application.DTOs;
-using KrosDemo.Application.Exceptions;
 using KrosDemo.Application.Interfaces;
-using KrosDemo.Domain.Entities;
-using KrosDemo.Infrastructure.Data;
 
 namespace KrosDemo.Infrastructure.Services;
 
 public class InvoiceItemService : IInvoiceItemService
 {
-    private readonly ApplicationDbContext _context;
+    private readonly IInvoiceItemRepository _repository;
+    private readonly IMapper _mapper;
 
-    public InvoiceItemService(ApplicationDbContext context)
+    public InvoiceItemService(IInvoiceItemRepository repository, IMapper mapper)
     {
-        _context = context;
+        _repository = repository;
+        _mapper = mapper;
     }
 
-    public async Task<InvoiceItem> UpdateInvoiceItemAsync(
+    public async Task<InvoiceItemDTO> UpdateInvoiceItemAsync(
         int id,
         InvoiceItemUpdateDTO dto,
         byte[] rowVersion,
         CancellationToken cancellationToken = default)
     {
-        var item = await _context.InvoiceItems.FindAsync([id], cancellationToken)
+        var item = await _repository.GetByIdAsync(id, cancellationToken)
             ?? throw new KeyNotFoundException($"InvoiceItem {id} not found.");
-
-        _context.Entry(item).Property(i => i.RowVersion).OriginalValue = rowVersion;
 
         item.Description = dto.Description;
         item.Unit = dto.Unit;
@@ -33,51 +30,15 @@ public class InvoiceItemService : IInvoiceItemService
         item.UnitPrice = dto.UnitPrice;
         item.VatRate = dto.VatRate;
 
-        _context.Entry(item).State = EntityState.Modified;
-
-        try
-        {
-            await _context.SaveChangesAsync(cancellationToken);
-            return item;
-        }
-        catch (DbUpdateConcurrencyException ex)
-        {
-            var entry = ex.Entries.Single();
-            var databaseValues = await entry.GetDatabaseValuesAsync(cancellationToken);
-
-            if (databaseValues is null)
-                throw new KeyNotFoundException($"InvoiceItem {id} was deleted by another user.");
-
-            var current = (InvoiceItem)databaseValues.ToObject();
-            throw new ConcurrencyConflictException(nameof(InvoiceItem), id, current);
-        }
+        await _repository.UpdateAsync(item, rowVersion, cancellationToken);
+        return _mapper.Map<InvoiceItemDTO>(item);
     }
 
-    public async Task DeleteInvoiceItemAsync(
+    public Task DeleteInvoiceItemAsync(
         int id,
         byte[] rowVersion,
         CancellationToken cancellationToken = default)
     {
-        var item = await _context.InvoiceItems.FindAsync([id], cancellationToken)
-            ?? throw new KeyNotFoundException($"InvoiceItem {id} not found.");
-
-        _context.Entry(item).Property(i => i.RowVersion).OriginalValue = rowVersion;
-        _context.InvoiceItems.Remove(item);
-
-        try
-        {
-            await _context.SaveChangesAsync(cancellationToken);
-        }
-        catch (DbUpdateConcurrencyException ex)
-        {
-            var entry = ex.Entries.Single();
-            var databaseValues = await entry.GetDatabaseValuesAsync(cancellationToken);
-
-            if (databaseValues is null)
-                return;
-
-            var current = (InvoiceItem)databaseValues.ToObject();
-            throw new ConcurrencyConflictException(nameof(InvoiceItem), id, current);
-        }
+        return _repository.DeleteAsync(id, rowVersion, cancellationToken);
     }
 }

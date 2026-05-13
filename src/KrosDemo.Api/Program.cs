@@ -5,7 +5,6 @@ using Microsoft.IdentityModel.Tokens;
 using KrosDemo.Api.Infrastructure;
 using KrosDemo.Application.Interfaces;
 using KrosDemo.Application.Mapping;
-using KrosDemo.Application.Services;
 using KrosDemo.Infrastructure.Data;
 using KrosDemo.Infrastructure.Identity;
 using KrosDemo.Infrastructure.Seed;
@@ -24,9 +23,11 @@ builder.Services.AddScoped<IUserDataSeeder, UserDataSeeder>();
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
+builder.Services.AddScoped<IInvoiceRepository, InvoiceRepository>();
+builder.Services.AddScoped<IInvoiceItemRepository, InvoiceItemRepository>();
+
 builder.Services.AddScoped<IInvoiceService, InvoiceService>();
 builder.Services.AddScoped<IInvoiceItemService, InvoiceItemService>();
-builder.Services.AddScoped<IServerService, ServerService>();
 builder.Services.AddScoped<IJwtService, JwtService>();
 
 builder.Services.AddExceptionHandler<ConcurrencyExceptionHandler>();

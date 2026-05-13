@@ -1,18 +1,18 @@
 using KrosDemo.Application.DTOs;
 using KrosDemo.Application.Filters;
-using KrosDemo.Domain.Entities;
+using KrosDemo.Application.RequestHelpers;
 
 namespace KrosDemo.Application.Interfaces;
 
 public interface IInvoiceService
 {
-    Task<(IReadOnlyList<Invoice> Items, int TotalCount)> GetInvoices(
+    Task<PagedResponse<List<InvoiceDTO>>> GetInvoices(
         InvoiceFilter filter,
         SortFilter sort,
         PaginationFilter pagination,
         CancellationToken cancellationToken = default);
 
-    Task<Invoice> UpdateInvoiceAsync(
+    Task<InvoiceDTO> UpdateInvoiceAsync(
         int id,
         InvoiceUpdateDTO dto,
         byte[] rowVersion,

@@ -1,4 +1,3 @@
-using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Net.Http.Headers;
@@ -18,14 +17,13 @@ public class InvoicesController : ControllerBase
     [Authorize(Roles = "Admin")]
     [HttpGet]
     public async Task<ActionResult<PagedResponse<List<InvoiceDTO>>>> GetInvoices(
-        [FromServices] IServerService server,
+        [FromServices] IInvoiceService service,
         [FromQuery] InvoiceFilter filter,
         [FromQuery] SortFilter sort,
         [FromQuery] PaginationFilter pagination,
         CancellationToken cancellationToken)
     {
-        var data = await server.GetInvoices(filter, sort, pagination, cancellationToken);
-        return Ok(data);
+        return Ok(await service.GetInvoices(filter, sort, pagination, cancellationToken));
     }
 
     // https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/ETag
@@ -34,7 +32,6 @@ public class InvoicesController : ControllerBase
     public async Task<ActionResult<InvoiceDTO>> UpdateInvoice(
         int id,
         [FromServices] IInvoiceService service,
-        [FromServices] IMapper mapper,
         [FromBody] InvoiceUpdateDTO dto,
         CancellationToken cancellationToken)
     {
@@ -44,7 +41,7 @@ public class InvoicesController : ControllerBase
 
         var updated = await service.UpdateInvoiceAsync(id, dto, rowVersion, cancellationToken);
         Response.Headers[HeaderNames.ETag] = ETag.Format(updated.RowVersion);
-        return Ok(mapper.Map<InvoiceDTO>(updated));
+        return Ok(updated);
     }
 
     [Authorize(Roles = "Admin")]

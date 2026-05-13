@@ -1,11 +1,10 @@
 using KrosDemo.Application.DTOs;
-using KrosDemo.Domain.Entities;
 
 namespace KrosDemo.Application.Interfaces;
 
 public interface IInvoiceItemService
 {
-    Task<InvoiceItem> UpdateInvoiceItemAsync(
+    Task<InvoiceItemDTO> UpdateInvoiceItemAsync(
         int id,
         InvoiceItemUpdateDTO dto,
         byte[] rowVersion,
