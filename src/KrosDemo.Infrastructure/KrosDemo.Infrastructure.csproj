@@ -21,9 +21,10 @@
     </ItemGroup>
 
     <ItemGroup>
-        <None Update="Seed\Csv\**\*.csv">
+        <Content Include="Seed\Csv\**\*.csv">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
+            <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+        </Content>
     </ItemGroup>
 
 </Project>

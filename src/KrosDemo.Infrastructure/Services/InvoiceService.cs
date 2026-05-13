@@ -81,6 +81,35 @@ public class InvoiceService : IInvoiceService
         }
     }
 
+    public async Task DeleteInvoiceAsync(
+        int id,
+        byte[] rowVersion,
+        CancellationToken cancellationToken = default)
+    {
+        var invoice = await _context.Invoices.FindAsync([id], cancellationToken)
+            ?? throw new KeyNotFoundException($"Invoice {id} not found.");
+
+        _context.Entry(invoice).Property(i => i.RowVersion).OriginalValue = rowVersion;
+        _context.Invoices.Remove(invoice);
+
+        try
+        {
+            await _context.SaveChangesAsync(cancellationToken);
+        }
+        catch (DbUpdateConcurrencyException ex)
+        {
+            var entry = ex.Entries.Single();
+            var databaseValues = await entry.GetDatabaseValuesAsync(cancellationToken);
+
+            // Row already gone — DELETE is idempotent, treat as success.
+            if (databaseValues is null)
+                return;
+
+            var current = (Invoice)databaseValues.ToObject();
+            throw new ConcurrencyConflictException(nameof(Invoice), id, current);
+        }
+    }
+
     private static IQueryable<Invoice> ApplyFilters(IQueryable<Invoice> query, InvoiceFilter filter)
     {
         if (!string.IsNullOrWhiteSpace(filter.InvoiceNumber))

@@ -16,4 +16,9 @@ public interface IInvoiceService
         int id,
         InvoiceUpdateDTO dto,
         CancellationToken cancellationToken = default);
+
+    Task DeleteInvoiceAsync(
+        int id,
+        byte[] rowVersion,
+        CancellationToken cancellationToken = default);
 }

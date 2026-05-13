@@ -25,10 +25,12 @@ builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepositor
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 builder.Services.AddScoped<IInvoiceService, InvoiceService>();
+builder.Services.AddScoped<IInvoiceItemService, InvoiceItemService>();
 builder.Services.AddScoped<IServerService, ServerService>();
 builder.Services.AddScoped<IJwtService, JwtService>();
 
 builder.Services.AddExceptionHandler<ConcurrencyExceptionHandler>();
+builder.Services.AddExceptionHandler<NotFoundExceptionHandler>();
 builder.Services.AddProblemDetails();
 
 builder.Services.AddCors();
@@ -73,6 +75,8 @@ builder.Services.AddOpenApiDocument(config =>
     };
 });
 
+builder.Services.AddHostedService<DatabaseInitializerHostedService>();
+
 var app = builder.Build();
 
 app.UseExceptionHandler();
@@ -90,6 +94,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseAuthentication();
+app.UseAuthorization();
 
 app.UseHttpsRedirection();
 

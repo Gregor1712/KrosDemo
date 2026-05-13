@@ -1,6 +1,8 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Net.Http.Headers;
+using KrosDemo.Api.Infrastructure;
 using KrosDemo.Application.DTOs;
 using KrosDemo.Application.Filters;
 using KrosDemo.Application.Interfaces;
@@ -36,6 +38,25 @@ public class InvoicesController : ControllerBase
         CancellationToken cancellationToken)
     {
         var updated = await service.UpdateInvoiceAsync(id, dto, cancellationToken);
+        Response.Headers[HeaderNames.ETag] = ETag.Format(updated.RowVersion);
         return Ok(mapper.Map<InvoiceDTO>(updated));
+    }
+
+    [Authorize(Roles = "Admin")]
+    [HttpDelete("{id:int}")]
+    public async Task<IActionResult> DeleteInvoice(
+        int id,
+        [FromServices] IInvoiceService service,
+        CancellationToken cancellationToken)
+    {
+        var rowVersion = ETag.TryParseIfMatch(Request.Headers);
+        if (rowVersion is null)
+            return Problem(
+                statusCode: StatusCodes.Status428PreconditionRequired,
+                title: "Missing or invalid If-Match header",
+                detail: "Provide the resource's current ETag in the If-Match header to perform a conditional delete.");
+
+        await service.DeleteInvoiceAsync(id, rowVersion, cancellationToken);
+        return NoContent();
     }
 }

@@ -38,7 +38,7 @@ public class CsvDataSeeder : ICsvDataSeeder
             Delimiter = ";"
         };
 
-        using var reader = new StreamReader("Seed/Csv/invoices.csv");
+        using var reader = new StreamReader(Path.Combine(AppContext.BaseDirectory, "Seed", "Csv", "invoices.csv"));
         using var csv = new CsvReader(reader, config);
         var records = csv.GetRecords<Invoice>().ToList();
 
@@ -69,7 +69,7 @@ public class CsvDataSeeder : ICsvDataSeeder
             Delimiter = ";"
         };
 
-        using var reader = new StreamReader("Seed/Csv/invoice-items.csv");
+        using var reader = new StreamReader(Path.Combine(AppContext.BaseDirectory, "Seed", "Csv", "invoice-items.csv"));
         using var csv = new CsvReader(reader, config);
         var records = csv.GetRecords<InvoiceItem>().ToList();
 

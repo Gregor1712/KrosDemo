@@ -87,6 +87,130 @@ export class AuthClient {
 @Injectable({
     providedIn: 'root'
 })
+export class InvoiceItemsClient {
+    private http: HttpClient;
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
+        this.http = http;
+        this.baseUrl = baseUrl ?? "";
+    }
+
+    updateInvoiceItem(id: number, dto: InvoiceItemUpdateDTO): Observable<InvoiceItemDTO> {
+        let url_ = this.baseUrl + "/api/invoiceitems/{id}";
+        if (id === undefined || id === null)
+            throw new globalThis.Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(dto);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("put", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processUpdateInvoiceItem(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processUpdateInvoiceItem(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<InvoiceItemDTO>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<InvoiceItemDTO>;
+        }));
+    }
+
+    protected processUpdateInvoiceItem(response: HttpResponseBase): Observable<InvoiceItemDTO> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = InvoiceItemDTO.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    deleteInvoiceItem(id: number): Observable<FileResponse> {
+        let url_ = this.baseUrl + "/api/invoiceitems/{id}";
+        if (id === undefined || id === null)
+            throw new globalThis.Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/octet-stream"
+            })
+        };
+
+        return this.http.request("delete", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processDeleteInvoiceItem(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processDeleteInvoiceItem(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<FileResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<FileResponse>;
+        }));
+    }
+
+    protected processDeleteInvoiceItem(response: HttpResponseBase): Observable<FileResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
+            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
+            if (fileName) {
+                fileName = decodeURIComponent(fileName);
+            } else {
+                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            }
+            return _observableOf({ fileName: fileName, data: responseBlob as any, status: status, headers: _headers });
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+}
+
+@Injectable({
+    providedIn: 'root'
+})
 export class InvoicesClient {
     private http: HttpClient;
     private baseUrl: string;
@@ -222,6 +346,61 @@ export class InvoicesClient {
             result200 = InvoiceDTO.fromJS(resultData200);
             return _observableOf(result200);
             }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    deleteInvoice(id: number): Observable<FileResponse> {
+        let url_ = this.baseUrl + "/api/invoices/{id}";
+        if (id === undefined || id === null)
+            throw new globalThis.Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/octet-stream"
+            })
+        };
+
+        return this.http.request("delete", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processDeleteInvoice(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processDeleteInvoice(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<FileResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<FileResponse>;
+        }));
+    }
+
+    protected processDeleteInvoice(response: HttpResponseBase): Observable<FileResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
+            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
+            if (fileName) {
+                fileName = decodeURIComponent(fileName);
+            } else {
+                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            }
+            return _observableOf({ fileName: fileName, data: responseBlob as any, status: status, headers: _headers });
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
@@ -420,6 +599,134 @@ export interface ILoginRequest {
     password?: string;
 }
 
+export class InvoiceItemDTO implements IInvoiceItemDTO {
+    id?: number;
+    description?: string;
+    unit?: string;
+    quantity?: number;
+    unitPrice?: number;
+    vatRate?: number;
+    invoiceId?: number;
+    rowVersion?: string;
+    netAmount?: number;
+    grossAmount?: number;
+
+    constructor(data?: IInvoiceItemDTO) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.description = _data["description"];
+            this.unit = _data["unit"];
+            this.quantity = _data["quantity"];
+            this.unitPrice = _data["unitPrice"];
+            this.vatRate = _data["vatRate"];
+            this.invoiceId = _data["invoiceId"];
+            this.rowVersion = _data["rowVersion"];
+            this.netAmount = _data["netAmount"];
+            this.grossAmount = _data["grossAmount"];
+        }
+    }
+
+    static fromJS(data: any): InvoiceItemDTO {
+        data = typeof data === 'object' ? data : {};
+        let result = new InvoiceItemDTO();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["description"] = this.description;
+        data["unit"] = this.unit;
+        data["quantity"] = this.quantity;
+        data["unitPrice"] = this.unitPrice;
+        data["vatRate"] = this.vatRate;
+        data["invoiceId"] = this.invoiceId;
+        data["rowVersion"] = this.rowVersion;
+        data["netAmount"] = this.netAmount;
+        data["grossAmount"] = this.grossAmount;
+        return data;
+    }
+}
+
+export interface IInvoiceItemDTO {
+    id?: number;
+    description?: string;
+    unit?: string;
+    quantity?: number;
+    unitPrice?: number;
+    vatRate?: number;
+    invoiceId?: number;
+    rowVersion?: string;
+    netAmount?: number;
+    grossAmount?: number;
+}
+
+export class InvoiceItemUpdateDTO implements IInvoiceItemUpdateDTO {
+    description?: string;
+    unit?: string;
+    quantity?: number;
+    unitPrice?: number;
+    vatRate?: number;
+    rowVersion?: string;
+
+    constructor(data?: IInvoiceItemUpdateDTO) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.description = _data["description"];
+            this.unit = _data["unit"];
+            this.quantity = _data["quantity"];
+            this.unitPrice = _data["unitPrice"];
+            this.vatRate = _data["vatRate"];
+            this.rowVersion = _data["rowVersion"];
+        }
+    }
+
+    static fromJS(data: any): InvoiceItemUpdateDTO {
+        data = typeof data === 'object' ? data : {};
+        let result = new InvoiceItemUpdateDTO();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["description"] = this.description;
+        data["unit"] = this.unit;
+        data["quantity"] = this.quantity;
+        data["unitPrice"] = this.unitPrice;
+        data["vatRate"] = this.vatRate;
+        data["rowVersion"] = this.rowVersion;
+        return data;
+    }
+}
+
+export interface IInvoiceItemUpdateDTO {
+    description?: string;
+    unit?: string;
+    quantity?: number;
+    unitPrice?: number;
+    vatRate?: number;
+    rowVersion?: string;
+}
+
 export class PagedResponseOfListOfInvoiceDTO implements IPagedResponseOfListOfInvoiceDTO {
     data?: InvoiceDTO[] | undefined;
     pageNumber?: number;
@@ -574,78 +881,6 @@ export enum InvoiceStatus {
     Paid = 2,
     Overdue = 3,
     Cancelled = 4,
-}
-
-export class InvoiceItemDTO implements IInvoiceItemDTO {
-    id?: number;
-    description?: string;
-    unit?: string;
-    quantity?: number;
-    unitPrice?: number;
-    vatRate?: number;
-    invoiceId?: number;
-    rowVersion?: string;
-    netAmount?: number;
-    grossAmount?: number;
-
-    constructor(data?: IInvoiceItemDTO) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.id = _data["id"];
-            this.description = _data["description"];
-            this.unit = _data["unit"];
-            this.quantity = _data["quantity"];
-            this.unitPrice = _data["unitPrice"];
-            this.vatRate = _data["vatRate"];
-            this.invoiceId = _data["invoiceId"];
-            this.rowVersion = _data["rowVersion"];
-            this.netAmount = _data["netAmount"];
-            this.grossAmount = _data["grossAmount"];
-        }
-    }
-
-    static fromJS(data: any): InvoiceItemDTO {
-        data = typeof data === 'object' ? data : {};
-        let result = new InvoiceItemDTO();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
-        data["description"] = this.description;
-        data["unit"] = this.unit;
-        data["quantity"] = this.quantity;
-        data["unitPrice"] = this.unitPrice;
-        data["vatRate"] = this.vatRate;
-        data["invoiceId"] = this.invoiceId;
-        data["rowVersion"] = this.rowVersion;
-        data["netAmount"] = this.netAmount;
-        data["grossAmount"] = this.grossAmount;
-        return data;
-    }
-}
-
-export interface IInvoiceItemDTO {
-    id?: number;
-    description?: string;
-    unit?: string;
-    quantity?: number;
-    unitPrice?: number;
-    vatRate?: number;
-    invoiceId?: number;
-    rowVersion?: string;
-    netAmount?: number;
-    grossAmount?: number;
 }
 
 export enum SortDirection {
