@@ -22,7 +22,11 @@ public class InvoiceItemsController : ControllerBase
         [FromBody] InvoiceItemUpdateDTO dto,
         CancellationToken cancellationToken)
     {
-        var updated = await service.UpdateInvoiceItemAsync(id, dto, cancellationToken);
+        var rowVersion = ETag.TryParseIfMatch(Request.Headers);
+        if (rowVersion is null)
+            return MissingIfMatch();
+
+        var updated = await service.UpdateInvoiceItemAsync(id, dto, rowVersion, cancellationToken);
         Response.Headers[HeaderNames.ETag] = ETag.Format(updated.RowVersion);
         return Ok(mapper.Map<InvoiceItemDTO>(updated));
     }
@@ -36,12 +40,14 @@ public class InvoiceItemsController : ControllerBase
     {
         var rowVersion = ETag.TryParseIfMatch(Request.Headers);
         if (rowVersion is null)
-            return Problem(
-                statusCode: StatusCodes.Status428PreconditionRequired,
-                title: "Missing or invalid If-Match header",
-                detail: "Provide the resource's current ETag in the If-Match header to perform a conditional delete.");
+            return MissingIfMatch();
 
         await service.DeleteInvoiceItemAsync(id, rowVersion, cancellationToken);
         return NoContent();
     }
+
+    private ObjectResult MissingIfMatch() => Problem(
+        statusCode: StatusCodes.Status428PreconditionRequired,
+        title: "Missing or invalid If-Match header",
+        detail: "Provide the resource's current ETag in the If-Match header to perform this conditional operation.");
 }

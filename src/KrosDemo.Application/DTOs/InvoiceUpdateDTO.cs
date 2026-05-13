@@ -11,5 +11,4 @@ public class InvoiceUpdateDTO
     public DateTime DueDate { get; set; }
     public InvoiceStatus Status { get; set; }
     public required string CurrencyCode { get; set; }
-    public required byte[] RowVersion { get; set; }
 }

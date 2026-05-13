@@ -19,18 +19,21 @@ public class InvoiceItemService : IInvoiceItemService
     public async Task<InvoiceItem> UpdateInvoiceItemAsync(
         int id,
         InvoiceItemUpdateDTO dto,
+        byte[] rowVersion,
         CancellationToken cancellationToken = default)
     {
         var item = await _context.InvoiceItems.FindAsync([id], cancellationToken)
             ?? throw new KeyNotFoundException($"InvoiceItem {id} not found.");
 
-        _context.Entry(item).Property(i => i.RowVersion).OriginalValue = dto.RowVersion;
+        _context.Entry(item).Property(i => i.RowVersion).OriginalValue = rowVersion;
 
         item.Description = dto.Description;
         item.Unit = dto.Unit;
         item.Quantity = dto.Quantity;
         item.UnitPrice = dto.UnitPrice;
         item.VatRate = dto.VatRate;
+
+        _context.Entry(item).State = EntityState.Modified;
 
         try
         {

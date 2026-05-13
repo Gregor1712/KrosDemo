@@ -44,6 +44,7 @@ public class InvoiceService : IInvoiceService
     public async Task<Invoice> UpdateInvoiceAsync(
         int id,
         InvoiceUpdateDTO dto,
+        byte[] rowVersion,
         CancellationToken cancellationToken = default)
     {
         var invoice = await _context.Invoices.FindAsync([id], cancellationToken)
@@ -53,7 +54,7 @@ public class InvoiceService : IInvoiceService
         // the UPDATE's WHERE clause; if another transaction has bumped RowVersion
         // since the client GETed the row, the UPDATE affects 0 rows and EF throws
         // DbUpdateConcurrencyException.
-        _context.Entry(invoice).Property(i => i.RowVersion).OriginalValue = dto.RowVersion;
+        _context.Entry(invoice).Property(i => i.RowVersion).OriginalValue = rowVersion;
 
         invoice.InvoiceNumber = dto.InvoiceNumber;
         invoice.CustomerName = dto.CustomerName;
@@ -62,6 +63,11 @@ public class InvoiceService : IInvoiceService
         invoice.DueDate = dto.DueDate;
         invoice.Status = dto.Status;
         invoice.CurrencyCode = dto.CurrencyCode;
+
+        // PUT is a full replace per HTTP semantics — force UPDATE even when no
+        // field actually changed, so the RowVersion check in the WHERE clause
+        // still runs against a stale If-Match.
+        _context.Entry(invoice).State = EntityState.Modified;
 
         try
         {

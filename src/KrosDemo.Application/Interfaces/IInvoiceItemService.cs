@@ -8,6 +8,7 @@ public interface IInvoiceItemService
     Task<InvoiceItem> UpdateInvoiceItemAsync(
         int id,
         InvoiceItemUpdateDTO dto,
+        byte[] rowVersion,
         CancellationToken cancellationToken = default);
 
     Task DeleteInvoiceItemAsync(

@@ -15,6 +15,7 @@ public interface IInvoiceService
     Task<Invoice> UpdateInvoiceAsync(
         int id,
         InvoiceUpdateDTO dto,
+        byte[] rowVersion,
         CancellationToken cancellationToken = default);
 
     Task DeleteInvoiceAsync(
