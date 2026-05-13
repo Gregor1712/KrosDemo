@@ -1,3 +1,4 @@
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using KrosDemo.Application.DTOs;
@@ -18,9 +19,23 @@ public class InvoicesController : ControllerBase
         [FromServices] IServerService server,
         [FromQuery] InvoiceFilter filter,
         [FromQuery] SortFilter sort,
-        [FromQuery] PaginationFilter pagination)
+        [FromQuery] PaginationFilter pagination,
+        CancellationToken cancellationToken)
     {
-        var data = await server.GetInvoices(filter, sort, pagination);
+        var data = await server.GetInvoices(filter, sort, pagination, cancellationToken);
         return Ok(data);
+    }
+
+    [Authorize(Roles = "Admin")]
+    [HttpPut("{id:int}")]
+    public async Task<ActionResult<InvoiceDTO>> UpdateInvoice(
+        int id,
+        [FromServices] IInvoiceService service,
+        [FromServices] IMapper mapper,
+        [FromBody] InvoiceUpdateDTO dto,
+        CancellationToken cancellationToken)
+    {
+        var updated = await service.UpdateInvoiceAsync(id, dto, cancellationToken);
+        return Ok(mapper.Map<InvoiceDTO>(updated));
     }
 }

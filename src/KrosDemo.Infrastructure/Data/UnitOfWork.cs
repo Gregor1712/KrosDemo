@@ -8,9 +8,9 @@ public class UnitOfWork(ApplicationDbContext context) : IUnitOfWork
 {
     private readonly ConcurrentDictionary<string, object> _repositories = new();
 
-    public async Task<bool> Complete()
+    public async Task<bool> Complete(CancellationToken cancellationToken = default)
     {
-        return await context.SaveChangesAsync() > 0;
+        return await context.SaveChangesAsync(cancellationToken) > 0;
     }
 
     public void Dispose()

@@ -39,5 +39,13 @@ public class ApplicationDbContext : DbContext
         modelBuilder.Entity<InvoiceItem>()
             .Property(i => i.VatRate)
             .HasPrecision(5, 2);
+
+        modelBuilder.Entity<Invoice>()
+            .Property(i => i.RowVersion)
+            .IsRowVersion();
+
+        modelBuilder.Entity<InvoiceItem>()
+            .Property(i => i.RowVersion)
+            .IsRowVersion();
     }
 }

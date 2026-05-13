@@ -13,5 +13,8 @@ public class Invoice : BaseEntity
     public required string CurrencyCode { get; set; }
 
     [Ignore]
+    public byte[] RowVersion { get; set; } = [];
+
+    [Ignore]
     public List<InvoiceItem> Items { get; set; } = [];
 }

@@ -174,6 +174,61 @@ export class InvoicesClient {
         }
         return _observableOf(null as any);
     }
+
+    updateInvoice(id: number, dto: InvoiceUpdateDTO): Observable<InvoiceDTO> {
+        let url_ = this.baseUrl + "/api/invoices/{id}";
+        if (id === undefined || id === null)
+            throw new globalThis.Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(dto);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("put", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processUpdateInvoice(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processUpdateInvoice(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<InvoiceDTO>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<InvoiceDTO>;
+        }));
+    }
+
+    protected processUpdateInvoice(response: HttpResponseBase): Observable<InvoiceDTO> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = InvoiceDTO.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
 }
 
 @Injectable({
@@ -434,6 +489,7 @@ export class InvoiceDTO implements IInvoiceDTO {
     dueDate?: string;
     status?: InvoiceStatus;
     currencyCode?: string;
+    rowVersion?: string;
     items?: InvoiceItemDTO[];
     totalNet?: number;
     totalGross?: number;
@@ -457,6 +513,7 @@ export class InvoiceDTO implements IInvoiceDTO {
             this.dueDate = _data["dueDate"];
             this.status = _data["status"];
             this.currencyCode = _data["currencyCode"];
+            this.rowVersion = _data["rowVersion"];
             if (Array.isArray(_data["items"])) {
                 this.items = [] as any;
                 for (let item of _data["items"])
@@ -484,6 +541,7 @@ export class InvoiceDTO implements IInvoiceDTO {
         data["dueDate"] = this.dueDate;
         data["status"] = this.status;
         data["currencyCode"] = this.currencyCode;
+        data["rowVersion"] = this.rowVersion;
         if (Array.isArray(this.items)) {
             data["items"] = [];
             for (let item of this.items)
@@ -504,6 +562,7 @@ export interface IInvoiceDTO {
     dueDate?: string;
     status?: InvoiceStatus;
     currencyCode?: string;
+    rowVersion?: string;
     items?: InvoiceItemDTO[];
     totalNet?: number;
     totalGross?: number;
@@ -525,6 +584,7 @@ export class InvoiceItemDTO implements IInvoiceItemDTO {
     unitPrice?: number;
     vatRate?: number;
     invoiceId?: number;
+    rowVersion?: string;
     netAmount?: number;
     grossAmount?: number;
 
@@ -546,6 +606,7 @@ export class InvoiceItemDTO implements IInvoiceItemDTO {
             this.unitPrice = _data["unitPrice"];
             this.vatRate = _data["vatRate"];
             this.invoiceId = _data["invoiceId"];
+            this.rowVersion = _data["rowVersion"];
             this.netAmount = _data["netAmount"];
             this.grossAmount = _data["grossAmount"];
         }
@@ -567,6 +628,7 @@ export class InvoiceItemDTO implements IInvoiceItemDTO {
         data["unitPrice"] = this.unitPrice;
         data["vatRate"] = this.vatRate;
         data["invoiceId"] = this.invoiceId;
+        data["rowVersion"] = this.rowVersion;
         data["netAmount"] = this.netAmount;
         data["grossAmount"] = this.grossAmount;
         return data;
@@ -581,6 +643,7 @@ export interface IInvoiceItemDTO {
     unitPrice?: number;
     vatRate?: number;
     invoiceId?: number;
+    rowVersion?: string;
     netAmount?: number;
     grossAmount?: number;
 }
@@ -588,6 +651,70 @@ export interface IInvoiceItemDTO {
 export enum SortDirection {
     Asc = 0,
     Desc = 1,
+}
+
+export class InvoiceUpdateDTO implements IInvoiceUpdateDTO {
+    invoiceNumber?: string;
+    customerName?: string;
+    customerBusinessId?: string | undefined;
+    issueDate?: string;
+    dueDate?: string;
+    status?: InvoiceStatus;
+    currencyCode?: string;
+    rowVersion?: string;
+
+    constructor(data?: IInvoiceUpdateDTO) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.invoiceNumber = _data["invoiceNumber"];
+            this.customerName = _data["customerName"];
+            this.customerBusinessId = _data["customerBusinessId"];
+            this.issueDate = _data["issueDate"];
+            this.dueDate = _data["dueDate"];
+            this.status = _data["status"];
+            this.currencyCode = _data["currencyCode"];
+            this.rowVersion = _data["rowVersion"];
+        }
+    }
+
+    static fromJS(data: any): InvoiceUpdateDTO {
+        data = typeof data === 'object' ? data : {};
+        let result = new InvoiceUpdateDTO();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["invoiceNumber"] = this.invoiceNumber;
+        data["customerName"] = this.customerName;
+        data["customerBusinessId"] = this.customerBusinessId;
+        data["issueDate"] = this.issueDate;
+        data["dueDate"] = this.dueDate;
+        data["status"] = this.status;
+        data["currencyCode"] = this.currencyCode;
+        data["rowVersion"] = this.rowVersion;
+        return data;
+    }
+}
+
+export interface IInvoiceUpdateDTO {
+    invoiceNumber?: string;
+    customerName?: string;
+    customerBusinessId?: string | undefined;
+    issueDate?: string;
+    dueDate?: string;
+    status?: InvoiceStatus;
+    currencyCode?: string;
+    rowVersion?: string;
 }
 
 export class PaginationOfInvoice implements IPaginationOfInvoice {
@@ -690,6 +817,7 @@ export class Invoice extends BaseEntity implements IInvoice {
     dueDate?: string;
     status?: InvoiceStatus;
     currencyCode?: string;
+    rowVersion?: string;
     items?: InvoiceItem[];
 
     constructor(data?: IInvoice) {
@@ -706,6 +834,7 @@ export class Invoice extends BaseEntity implements IInvoice {
             this.dueDate = _data["dueDate"];
             this.status = _data["status"];
             this.currencyCode = _data["currencyCode"];
+            this.rowVersion = _data["rowVersion"];
             if (Array.isArray(_data["items"])) {
                 this.items = [] as any;
                 for (let item of _data["items"])
@@ -730,6 +859,7 @@ export class Invoice extends BaseEntity implements IInvoice {
         data["dueDate"] = this.dueDate;
         data["status"] = this.status;
         data["currencyCode"] = this.currencyCode;
+        data["rowVersion"] = this.rowVersion;
         if (Array.isArray(this.items)) {
             data["items"] = [];
             for (let item of this.items)
@@ -748,6 +878,7 @@ export interface IInvoice extends IBaseEntity {
     dueDate?: string;
     status?: InvoiceStatus;
     currencyCode?: string;
+    rowVersion?: string;
     items?: InvoiceItem[];
 }
 
@@ -758,6 +889,7 @@ export class InvoiceItem extends BaseEntity implements IInvoiceItem {
     unitPrice?: number;
     vatRate?: number;
     invoiceId?: number;
+    rowVersion?: string;
     invoice?: Invoice;
 
     constructor(data?: IInvoiceItem) {
@@ -773,6 +905,7 @@ export class InvoiceItem extends BaseEntity implements IInvoiceItem {
             this.unitPrice = _data["unitPrice"];
             this.vatRate = _data["vatRate"];
             this.invoiceId = _data["invoiceId"];
+            this.rowVersion = _data["rowVersion"];
             this.invoice = _data["invoice"] ? Invoice.fromJS(_data["invoice"]) : undefined as any;
         }
     }
@@ -792,6 +925,7 @@ export class InvoiceItem extends BaseEntity implements IInvoiceItem {
         data["unitPrice"] = this.unitPrice;
         data["vatRate"] = this.vatRate;
         data["invoiceId"] = this.invoiceId;
+        data["rowVersion"] = this.rowVersion;
         data["invoice"] = this.invoice ? this.invoice.toJSON() : undefined as any;
         super.toJSON(data);
         return data;
@@ -805,6 +939,7 @@ export interface IInvoiceItem extends IBaseEntity {
     unitPrice?: number;
     vatRate?: number;
     invoiceId?: number;
+    rowVersion?: string;
     invoice?: Invoice;
 }
 

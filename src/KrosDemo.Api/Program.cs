@@ -2,6 +2,7 @@ using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using KrosDemo.Api.Infrastructure;
 using KrosDemo.Application.Interfaces;
 using KrosDemo.Application.Mapping;
 using KrosDemo.Application.Services;
@@ -26,6 +27,9 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IInvoiceService, InvoiceService>();
 builder.Services.AddScoped<IServerService, ServerService>();
 builder.Services.AddScoped<IJwtService, JwtService>();
+
+builder.Services.AddExceptionHandler<ConcurrencyExceptionHandler>();
+builder.Services.AddProblemDetails();
 
 builder.Services.AddCors();
 
@@ -70,6 +74,8 @@ builder.Services.AddOpenApiDocument(config =>
 });
 
 var app = builder.Build();
+
+app.UseExceptionHandler();
 
 app.UseCors(x => x
     .AllowAnyHeader()

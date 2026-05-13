@@ -1,4 +1,6 @@
 using Microsoft.EntityFrameworkCore;
+using KrosDemo.Application.DTOs;
+using KrosDemo.Application.Exceptions;
 using KrosDemo.Application.Filters;
 using KrosDemo.Application.Interfaces;
 using KrosDemo.Domain.Entities;
@@ -18,14 +20,15 @@ public class InvoiceService : IInvoiceService
     public async Task<(IReadOnlyList<Invoice> Items, int TotalCount)> GetInvoices(
         InvoiceFilter filter,
         SortFilter sort,
-        PaginationFilter pagination)
+        PaginationFilter pagination,
+        CancellationToken cancellationToken = default)
     {
         var query = _context.Invoices
             .Include(i => i.Items)
             .AsQueryable();
 
         query = ApplyFilters(query, filter);
-        var totalCount = await query.CountAsync();
+        var totalCount = await query.CountAsync(cancellationToken);
 
         query = ApplySort(query, sort);
 
@@ -33,9 +36,49 @@ public class InvoiceService : IInvoiceService
         var items = await query
             .Skip(skip)
             .Take(pagination.PageSize)
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
 
         return (items, totalCount);
+    }
+
+    public async Task<Invoice> UpdateInvoiceAsync(
+        int id,
+        InvoiceUpdateDTO dto,
+        CancellationToken cancellationToken = default)
+    {
+        var invoice = await _context.Invoices.FindAsync([id], cancellationToken)
+            ?? throw new KeyNotFoundException($"Invoice {id} not found.");
+
+        // Tell EF the row version we *think* the row has. EF will include this in
+        // the UPDATE's WHERE clause; if another transaction has bumped RowVersion
+        // since the client GETed the row, the UPDATE affects 0 rows and EF throws
+        // DbUpdateConcurrencyException.
+        _context.Entry(invoice).Property(i => i.RowVersion).OriginalValue = dto.RowVersion;
+
+        invoice.InvoiceNumber = dto.InvoiceNumber;
+        invoice.CustomerName = dto.CustomerName;
+        invoice.CustomerBusinessId = dto.CustomerBusinessId;
+        invoice.IssueDate = dto.IssueDate;
+        invoice.DueDate = dto.DueDate;
+        invoice.Status = dto.Status;
+        invoice.CurrencyCode = dto.CurrencyCode;
+
+        try
+        {
+            await _context.SaveChangesAsync(cancellationToken);
+            return invoice;
+        }
+        catch (DbUpdateConcurrencyException ex)
+        {
+            var entry = ex.Entries.Single();
+            var databaseValues = await entry.GetDatabaseValuesAsync(cancellationToken);
+
+            if (databaseValues is null)
+                throw new KeyNotFoundException($"Invoice {id} was deleted by another user.");
+
+            var current = (Invoice)databaseValues.ToObject();
+            throw new ConcurrencyConflictException(nameof(Invoice), id, current);
+        }
     }
 
     private static IQueryable<Invoice> ApplyFilters(IQueryable<Invoice> query, InvoiceFilter filter)

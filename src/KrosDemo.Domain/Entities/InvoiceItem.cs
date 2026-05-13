@@ -13,5 +13,8 @@ public class InvoiceItem : BaseEntity
     public int InvoiceId { get; set; }
 
     [Ignore]
+    public byte[] RowVersion { get; set; } = [];
+
+    [Ignore]
     public Invoice Invoice { get; set; } = null!;
 }

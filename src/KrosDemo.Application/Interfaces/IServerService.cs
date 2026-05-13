@@ -9,5 +9,6 @@ public interface IServerService
     Task<PagedResponse<List<InvoiceDTO>>> GetInvoices(
         InvoiceFilter filter,
         SortFilter sort,
-        PaginationFilter pagination);
+        PaginationFilter pagination,
+        CancellationToken cancellationToken = default);
 }

@@ -1,5 +1,6 @@
 using System.Text;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using KrosDemo.Application.Interfaces;
 using KrosDemo.Infrastructure.Data;
 
@@ -19,9 +20,9 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("login")]
-    public IActionResult Login([FromBody] LoginRequest request)
+    public async Task<IActionResult> Login([FromBody] LoginRequest request, CancellationToken cancellationToken)
     {
-        var user = _context.Users.FirstOrDefault(u => u.Username == request.Username);
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == request.Username, cancellationToken);
         if (user == null || !VerifyPassword(request.Password, user.PasswordHash))
             return Unauthorized(new { message = "Invalid credentials" });
 

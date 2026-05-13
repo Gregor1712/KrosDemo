@@ -20,9 +20,10 @@ public class ServerService : IServerService
     public async Task<PagedResponse<List<InvoiceDTO>>> GetInvoices(
         InvoiceFilter filter,
         SortFilter sort,
-        PaginationFilter pagination)
+        PaginationFilter pagination,
+        CancellationToken cancellationToken = default)
     {
-        var (items, totalCount) = await _invoiceService.GetInvoices(filter, sort, pagination);
+        var (items, totalCount) = await _invoiceService.GetInvoices(filter, sort, pagination, cancellationToken);
         var dtos = _mapper.Map<List<InvoiceDTO>>(items);
 
         return new PagedResponse<List<InvoiceDTO>>(
