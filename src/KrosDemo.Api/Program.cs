@@ -35,8 +35,9 @@ builder.Services.AddScoped<IInvoiceItemService, InvoiceItemService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IJwtService, JwtService>();
 
-builder.Services.AddExceptionHandler<ConcurrencyExceptionHandler>();
-builder.Services.AddExceptionHandler<NotFoundExceptionHandler>();
+builder.Services.AddSingleton<ApiProblemDetailsFactory>();
+builder.Services.AddTransient<GlobalExceptionHandlingMiddleware>();
+
 builder.Services.AddProblemDetails();
 
 builder.Services.AddCors();
@@ -85,7 +86,7 @@ builder.Services.AddHostedService<DatabaseInitializerHostedService>();
 
 var app = builder.Build();
 
-app.UseExceptionHandler();
+app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
 
 app.UseCors(x => x
     .AllowAnyHeader()

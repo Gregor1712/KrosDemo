@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Net.Http.Headers;
 using KrosDemo.Api.Infrastructure;
 using KrosDemo.Application.DTOs;
+using KrosDemo.Application.Exceptions;
 using KrosDemo.Application.Services;
 
 namespace KrosDemo.Api.Controllers;
@@ -10,7 +11,7 @@ namespace KrosDemo.Api.Controllers;
 [Authorize]
 [ApiController]
 [Route("api/invoiceitems")]
-public class InvoiceItemsController : BaseController
+public class InvoiceItemsController : ControllerBase
 {
     [Authorize(Roles = "Admin")]
     [HttpPut("{id:int}")]
@@ -20,9 +21,8 @@ public class InvoiceItemsController : BaseController
         [FromBody] InvoiceItemUpdateDTO dto,
         CancellationToken cancellationToken)
     {
-        var rowVersion = ETag.TryParseIfMatch(Request.Headers);
-        if (rowVersion is null)
-            return MissingIfMatch();
+        var rowVersion = ETag.TryParseIfMatch(Request.Headers)
+            ?? throw PreconditionRequiredException.MissingIfMatch();
 
         var updated = await service.UpdateInvoiceItemAsync(id, dto, rowVersion, cancellationToken);
         Response.Headers[HeaderNames.ETag] = ETag.Format(updated.RowVersion);
@@ -36,9 +36,8 @@ public class InvoiceItemsController : BaseController
         [FromServices] IInvoiceItemService service,
         CancellationToken cancellationToken)
     {
-        var rowVersion = ETag.TryParseIfMatch(Request.Headers);
-        if (rowVersion is null)
-            return MissingIfMatch();
+        var rowVersion = ETag.TryParseIfMatch(Request.Headers)
+            ?? throw PreconditionRequiredException.MissingIfMatch();
 
         await service.DeleteInvoiceItemAsync(id, rowVersion, cancellationToken);
         return NoContent();
