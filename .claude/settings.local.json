@@ -8,7 +8,8 @@
       "Bash(dotnet tool *)",
       "Bash(dotnet run *)",
       "Bash(ASPNETCORE_ENVIRONMENT=Development ASPNETCORE_URLS=https://localhost:5001 dotnet bin/Debug/net8.0/KrosDemo.Api.dll)",
-      "Read(//c/Users/GP/AppData/Local/Temp/claude/C--Users-GP-RiderProjects-KrosDemo/db49a8c7-b87c-4995-b4ae-f676dff77869/tasks/**)"
+      "Read(//c/Users/GP/AppData/Local/Temp/claude/C--Users-GP-RiderProjects-KrosDemo/db49a8c7-b87c-4995-b4ae-f676dff77869/tasks/**)",
+      "Bash(dotnet add *)"
     ]
   }
 }

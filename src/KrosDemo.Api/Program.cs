@@ -2,6 +2,7 @@ using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using NLog.Web;
 using KrosDemo.Api.Infrastructure;
 using KrosDemo.Application.Interfaces;
 using KrosDemo.Application.Mapping;
@@ -14,6 +15,9 @@ using KrosDemo.Infrastructure.Seed;
 using KrosDemo.Infrastructure.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Logging.ClearProviders();
+builder.Host.UseNLog();
 
 builder.Configuration.AddJsonFile("appsettings.Development.json", optional: true);
 
