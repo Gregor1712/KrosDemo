@@ -26,6 +26,18 @@ public class InvoicesController : ControllerBase
         return Ok(await service.GetInvoices(filter, sort, pagination, cancellationToken));
     }
 
+    //[Authorize(Roles = "Admin")]
+    [HttpPost]
+    public async Task<ActionResult<InvoiceDTO>> CreateInvoice(
+        [FromServices] IInvoiceService service,
+        [FromBody] InvoiceCreateDTO dto,
+        CancellationToken cancellationToken)
+    {
+        var created = await service.CreateInvoiceAsync(dto, cancellationToken);
+        Response.Headers[HeaderNames.ETag] = ETag.Format(created.RowVersion);
+        return Created($"api/invoices/{created.Id}", created);
+    }
+
     // https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/ETag
     //[Authorize(Roles = "Admin")]
     [HttpPut("{id:int}")]

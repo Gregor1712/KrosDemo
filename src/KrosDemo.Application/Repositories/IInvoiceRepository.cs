@@ -7,6 +7,8 @@ public interface IInvoiceRepository
 {
     Task<Invoice?> GetByIdAsync(int id, CancellationToken cancellationToken = default);
 
+    Task<Invoice> AddAsync(Invoice invoice, CancellationToken cancellationToken = default);
+
     Task<(IReadOnlyList<Invoice> Items, int TotalCount)> GetPagedAsync(
         InvoiceFilter filter,
         SortFilter sort,

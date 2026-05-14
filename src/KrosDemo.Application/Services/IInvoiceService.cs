@@ -12,6 +12,10 @@ public interface IInvoiceService
         PaginationFilter pagination,
         CancellationToken cancellationToken = default);
 
+    Task<InvoiceDTO> CreateInvoiceAsync(
+        InvoiceCreateDTO dto,
+        CancellationToken cancellationToken = default);
+
     Task<InvoiceDTO> UpdateInvoiceAsync(
         int id,
         InvoiceUpdateDTO dto,

@@ -23,6 +23,13 @@ public class InvoiceRepository : IInvoiceRepository
             .FirstOrDefaultAsync(i => i.Id == id, cancellationToken);
     }
 
+    public async Task<Invoice> AddAsync(Invoice invoice, CancellationToken cancellationToken = default)
+    {
+        _context.Invoices.Add(invoice);
+        await _context.SaveChangesAsync(cancellationToken);
+        return invoice;
+    }
+
     public async Task<(IReadOnlyList<Invoice> Items, int TotalCount)> GetPagedAsync(
         InvoiceFilter filter,
         SortFilter sort,

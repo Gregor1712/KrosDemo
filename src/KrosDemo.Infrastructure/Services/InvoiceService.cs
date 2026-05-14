@@ -34,6 +34,15 @@ public class InvoiceService : IInvoiceService
             totalCount);
     }
 
+    public async Task<InvoiceDTO> CreateInvoiceAsync(
+        InvoiceCreateDTO dto,
+        CancellationToken cancellationToken = default)
+    {
+        var invoice = _mapper.Map<Domain.Entities.Invoice>(dto);
+        await _repository.AddAsync(invoice, cancellationToken);
+        return _mapper.Map<InvoiceDTO>(invoice);
+    }
+
     public async Task<InvoiceDTO> UpdateInvoiceAsync(
         int id,
         InvoiceUpdateDTO dto,
@@ -43,14 +52,7 @@ public class InvoiceService : IInvoiceService
         var invoice = await _repository.GetByIdAsync(id, cancellationToken)
             ?? throw new KeyNotFoundException($"Invoice {id} not found.");
 
-        invoice.InvoiceNumber = dto.InvoiceNumber;
-        invoice.CustomerName = dto.CustomerName;
-        invoice.CustomerBusinessId = dto.CustomerBusinessId;
-        invoice.IssueDate = dto.IssueDate;
-        invoice.DueDate = dto.DueDate;
-        invoice.Status = dto.Status;
-        invoice.CurrencyCode = dto.CurrencyCode;
-
+        _mapper.Map(dto, invoice);
         await _repository.UpdateAsync(invoice, rowVersion, cancellationToken);
         return _mapper.Map<InvoiceDTO>(invoice);
     }

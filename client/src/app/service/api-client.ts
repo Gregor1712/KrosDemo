@@ -427,6 +427,58 @@ export class InvoicesClient {
         return _observableOf(null as any);
     }
 
+    createInvoice(dto: InvoiceCreateDTO): Observable<InvoiceDTO> {
+        let url_ = this.baseUrl + "/api/invoices";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(dto);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processCreateInvoice(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processCreateInvoice(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<InvoiceDTO>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<InvoiceDTO>;
+        }));
+    }
+
+    protected processCreateInvoice(response: HttpResponseBase): Observable<InvoiceDTO> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = InvoiceDTO.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
     updateInvoice(id: number, dto: InvoiceUpdateDTO): Observable<InvoiceDTO> {
         let url_ = this.baseUrl + "/api/invoices/{id}";
         if (id === undefined || id === null)
@@ -998,6 +1050,130 @@ export enum ConditionType {
 export enum SortDirection {
     Asc = 0,
     Desc = 1,
+}
+
+export class InvoiceCreateDTO implements IInvoiceCreateDTO {
+    invoiceNumber?: string;
+    customerName?: string;
+    customerBusinessId?: string | undefined;
+    issueDate?: string;
+    dueDate?: string;
+    status?: InvoiceStatus;
+    currencyCode?: string;
+    items?: InvoiceItemCreateDTO[];
+
+    constructor(data?: IInvoiceCreateDTO) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.invoiceNumber = _data["invoiceNumber"];
+            this.customerName = _data["customerName"];
+            this.customerBusinessId = _data["customerBusinessId"];
+            this.issueDate = _data["issueDate"];
+            this.dueDate = _data["dueDate"];
+            this.status = _data["status"];
+            this.currencyCode = _data["currencyCode"];
+            if (Array.isArray(_data["items"])) {
+                this.items = [] as any;
+                for (let item of _data["items"])
+                    this.items!.push(InvoiceItemCreateDTO.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): InvoiceCreateDTO {
+        data = typeof data === 'object' ? data : {};
+        let result = new InvoiceCreateDTO();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["invoiceNumber"] = this.invoiceNumber;
+        data["customerName"] = this.customerName;
+        data["customerBusinessId"] = this.customerBusinessId;
+        data["issueDate"] = this.issueDate;
+        data["dueDate"] = this.dueDate;
+        data["status"] = this.status;
+        data["currencyCode"] = this.currencyCode;
+        if (Array.isArray(this.items)) {
+            data["items"] = [];
+            for (let item of this.items)
+                data["items"].push(item ? item.toJSON() : undefined as any);
+        }
+        return data;
+    }
+}
+
+export interface IInvoiceCreateDTO {
+    invoiceNumber?: string;
+    customerName?: string;
+    customerBusinessId?: string | undefined;
+    issueDate?: string;
+    dueDate?: string;
+    status?: InvoiceStatus;
+    currencyCode?: string;
+    items?: InvoiceItemCreateDTO[];
+}
+
+export class InvoiceItemCreateDTO implements IInvoiceItemCreateDTO {
+    description?: string;
+    unit?: string;
+    quantity?: number;
+    unitPrice?: number;
+    vatRate?: number;
+
+    constructor(data?: IInvoiceItemCreateDTO) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.description = _data["description"];
+            this.unit = _data["unit"];
+            this.quantity = _data["quantity"];
+            this.unitPrice = _data["unitPrice"];
+            this.vatRate = _data["vatRate"];
+        }
+    }
+
+    static fromJS(data: any): InvoiceItemCreateDTO {
+        data = typeof data === 'object' ? data : {};
+        let result = new InvoiceItemCreateDTO();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["description"] = this.description;
+        data["unit"] = this.unit;
+        data["quantity"] = this.quantity;
+        data["unitPrice"] = this.unitPrice;
+        data["vatRate"] = this.vatRate;
+        return data;
+    }
+}
+
+export interface IInvoiceItemCreateDTO {
+    description?: string;
+    unit?: string;
+    quantity?: number;
+    unitPrice?: number;
+    vatRate?: number;
 }
 
 export class InvoiceUpdateDTO implements IInvoiceUpdateDTO {

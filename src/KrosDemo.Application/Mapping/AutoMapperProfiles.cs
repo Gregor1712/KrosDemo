@@ -10,8 +10,11 @@ public class AutoMapperProfiles : Profile
     {
         CreateMap<Invoice, InvoiceDTO>();
         CreateMap<InvoiceDTO, Invoice>();
+        CreateMap<InvoiceCreateDTO, Invoice>();
+        CreateMap<InvoiceUpdateDTO, Invoice>();
 
         CreateMap<InvoiceItem, InvoiceItemDTO>();
         CreateMap<InvoiceItemDTO, InvoiceItem>();
+        CreateMap<InvoiceItemCreateDTO, InvoiceItem>();
     }
 }
