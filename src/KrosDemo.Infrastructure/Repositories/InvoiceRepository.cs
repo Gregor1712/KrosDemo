@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using KrosDemo.Application.Exceptions;
 using KrosDemo.Application.Filters;
 using KrosDemo.Application.Repositories;
 using KrosDemo.Domain.Entities;
@@ -67,7 +66,7 @@ public class InvoiceRepository : IInvoiceRepository
         }
         catch (DbUpdateConcurrencyException ex)
         {
-            await ThrowMappedConcurrencyAsync(ex, invoice.Id, cancellationToken);
+            await ConcurrencyConflictMapper.ThrowOnUpdateConflictAsync<Invoice>(ex, invoice.Id, cancellationToken);
         }
     }
 
@@ -85,29 +84,8 @@ public class InvoiceRepository : IInvoiceRepository
         }
         catch (DbUpdateConcurrencyException ex)
         {
-            var entry = ex.Entries.Single();
-            var databaseValues = await entry.GetDatabaseValuesAsync(cancellationToken);
-
-            if (databaseValues is null) return;
-
-            var current = (Invoice)databaseValues.ToObject();
-            throw new ConcurrencyConflictException(nameof(Invoice), id, current);
+            await ConcurrencyConflictMapper.HandleDeleteConflictAsync<Invoice>(ex, id, cancellationToken);
         }
-    }
-
-    private static async Task ThrowMappedConcurrencyAsync(
-        DbUpdateConcurrencyException ex,
-        int id,
-        CancellationToken cancellationToken)
-    {
-        var entry = ex.Entries.Single();
-        var databaseValues = await entry.GetDatabaseValuesAsync(cancellationToken);
-
-        if (databaseValues is null)
-            throw new KeyNotFoundException($"Invoice {id} was deleted by another user.");
-
-        var current = (Invoice)databaseValues.ToObject();
-        throw new ConcurrencyConflictException(nameof(Invoice), id, current);
     }
 
     // private static IQueryable<Invoice> ApplyFilters(IQueryable<Invoice> query, InvoiceFilter filter)

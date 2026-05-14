@@ -43,9 +43,4 @@ public class InvoiceItemsController : BaseController
         await service.DeleteInvoiceItemAsync(id, rowVersion, cancellationToken);
         return NoContent();
     }
-
-    private ObjectResult MissingIfMatch() => Problem(
-        statusCode: StatusCodes.Status428PreconditionRequired,
-        title: "Missing or invalid If-Match header",
-        detail: "Provide the resource's current ETag in the If-Match header to perform this conditional operation.");
 }
