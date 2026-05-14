@@ -59,10 +59,6 @@ public class InvoiceRepository : IInvoiceRepository
     public async Task UpdateAsync(Invoice invoice, byte[] originalRowVersion, CancellationToken cancellationToken = default)
     {
         _context.Entry(invoice).Property(i => i.RowVersion).OriginalValue = originalRowVersion;
-
-        // PUT is a full replace per HTTP semantics — force UPDATE even when no
-        // field actually changed, so the RowVersion check in the WHERE clause
-        // still runs against a stale If-Match.
         _context.Entry(invoice).State = EntityState.Modified;
 
         try
@@ -92,9 +88,7 @@ public class InvoiceRepository : IInvoiceRepository
             var entry = ex.Entries.Single();
             var databaseValues = await entry.GetDatabaseValuesAsync(cancellationToken);
 
-            // Row already gone — DELETE is idempotent per RFC 9110, treat as success.
-            if (databaseValues is null)
-                return;
+            if (databaseValues is null) return;
 
             var current = (Invoice)databaseValues.ToObject();
             throw new ConcurrencyConflictException(nameof(Invoice), id, current);

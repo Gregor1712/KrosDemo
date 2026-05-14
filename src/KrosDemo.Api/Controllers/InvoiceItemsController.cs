@@ -10,7 +10,7 @@ namespace KrosDemo.Api.Controllers;
 [Authorize]
 [ApiController]
 [Route("api/invoiceitems")]
-public class InvoiceItemsController : ControllerBase
+public class InvoiceItemsController : BaseController
 {
     [Authorize(Roles = "Admin")]
     [HttpPut("{id:int}")]

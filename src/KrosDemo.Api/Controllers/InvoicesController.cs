@@ -12,7 +12,7 @@ namespace KrosDemo.Api.Controllers;
 //[Authorize]
 [ApiController]
 [Route("api/invoices")]
-public class InvoicesController : ControllerBase
+public class InvoicesController : BaseController
 {
     //[Authorize(Roles = "Admin")]
     [HttpGet]
@@ -48,8 +48,7 @@ public class InvoicesController : ControllerBase
         CancellationToken cancellationToken)
     {
         var rowVersion = ETag.TryParseIfMatch(Request.Headers);
-        if (rowVersion is null)
-            return MissingIfMatch();
+        if (rowVersion is null) return MissingIfMatch();
 
         var updated = await service.UpdateInvoiceAsync(id, dto, rowVersion, cancellationToken);
         Response.Headers[HeaderNames.ETag] = ETag.Format(updated.RowVersion);
@@ -64,15 +63,9 @@ public class InvoicesController : ControllerBase
         CancellationToken cancellationToken)
     {
         var rowVersion = ETag.TryParseIfMatch(Request.Headers);
-        if (rowVersion is null)
-            return MissingIfMatch();
+        if (rowVersion is null) return MissingIfMatch();
 
         await service.DeleteInvoiceAsync(id, rowVersion, cancellationToken);
         return NoContent();
     }
-
-    private ObjectResult MissingIfMatch() => Problem(
-        statusCode: StatusCodes.Status428PreconditionRequired,
-        title: "Missing or invalid If-Match header",
-        detail: "Provide the resource's current ETag in the If-Match header to perform this conditional operation.");
 }
