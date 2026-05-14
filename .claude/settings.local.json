@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cd \"C:/Users/grego/RiderProjects/KrosDemo/src/KrosDemo.Api\" && dotnet run --launch-profile https 2>&1)",
+      "Bash(curl -sk -X POST https://localhost:5001/api/auth/register -H \"Content-Type: application/json\" -d '{\"username\":\"testuser\",\"password\":\"Test#123\"}' -w \"\\\\nHTTP_STATUS: %{http_code}\\\\n\")",
+      "Bash(curl -sk -X POST https://localhost:5001/api/auth/login -H \"Content-Type: application/json\" -d '{\"username\":\"testuser\",\"password\":\"Test#123\"}' -w \"\\\\nHTTP_STATUS: %{http_code}\\\\n\")"
+    ]
+  }
+}
