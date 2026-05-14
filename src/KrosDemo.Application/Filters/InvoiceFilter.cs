@@ -6,6 +6,9 @@ namespace KrosDemo.Application.Filters;
 public class InvoiceFilter : FilterBase
 {
     public StringCondition? CustomerName { get; set; } = new(nameof(CustomerName));
+    
+    public StringCondition? Description { get; set; } = new(nameof(Description), nameof(Invoice.Items));
+    
     // public string? InvoiceNumber { get; set; }
     // public string? CustomerName { get; set; }
     // public string? CustomerBusinessId { get; set; }

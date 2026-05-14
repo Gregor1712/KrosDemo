@@ -329,7 +329,7 @@ export class InvoicesClient {
         this.baseUrl = baseUrl ?? "";
     }
 
-    getInvoices(customerName_Operator?: ConditionType | null | undefined, customerName_Values?: string[] | undefined, sortBy?: string | null | undefined, direction?: SortDirection | undefined, pageNumber?: number | undefined, pageSize?: number | undefined): Observable<PagedResponseOfListOfInvoiceDTO> {
+    getInvoices(customerName_Operator?: ConditionType | null | undefined, customerName_Values?: string[] | undefined, description_Operator?: ConditionType | null | undefined, description_Values?: string[] | undefined, sortBy?: string | null | undefined, direction?: SortDirection | undefined, pageNumber?: number | undefined, pageSize?: number | undefined): Observable<PagedResponseOfListOfInvoiceDTO> {
         let url_ = this.baseUrl + "/api/invoices?";
         if (customerName_Operator !== undefined && customerName_Operator !== null)
             url_ += "CustomerName.Operator=" + encodeURIComponent("" + customerName_Operator) + "&";
@@ -337,6 +337,12 @@ export class InvoicesClient {
             throw new globalThis.Error("The parameter 'customerName_Values' cannot be null.");
         else if (customerName_Values !== undefined)
             customerName_Values && customerName_Values.forEach(item => { url_ += "CustomerName.Values=" + encodeURIComponent("" + item) + "&"; });
+        if (description_Operator !== undefined && description_Operator !== null)
+            url_ += "Description.Operator=" + encodeURIComponent("" + description_Operator) + "&";
+        if (description_Values === null)
+            throw new globalThis.Error("The parameter 'description_Values' cannot be null.");
+        else if (description_Values !== undefined)
+            description_Values && description_Values.forEach(item => { url_ += "Description.Values=" + encodeURIComponent("" + item) + "&"; });
         if (sortBy !== undefined && sortBy !== null)
             url_ += "SortBy=" + encodeURIComponent("" + sortBy) + "&";
         if (direction === null)

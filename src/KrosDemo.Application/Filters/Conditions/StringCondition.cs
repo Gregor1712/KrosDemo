@@ -10,7 +10,7 @@ namespace KrosDemo.Application.Filters.Conditions;
         private static readonly MethodInfo? StringEndsWith = typeof(string).GetMethod(nameof(string.EndsWith), new Type[] { typeof(string) });
         private static readonly MethodInfo? ListContains = typeof(List<string>).GetMethod(nameof(List<string>.Contains), new Type[] { typeof(string) });
 
-        public StringCondition(string instanceName) : base(instanceName) { }
+        public StringCondition(string instanceName, string? navigationProperty = null) : base(instanceName, navigationProperty) { }
 
         protected override Expression BuildExpression(Expression name, List<string> values, ConditionType? @operator)
         {
