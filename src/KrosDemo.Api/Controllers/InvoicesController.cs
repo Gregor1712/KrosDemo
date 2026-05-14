@@ -9,12 +9,12 @@ using KrosDemo.Application.Services;
 
 namespace KrosDemo.Api.Controllers;
 
-[Authorize]
+//[Authorize]
 [ApiController]
 [Route("api/invoices")]
 public class InvoicesController : ControllerBase
 {
-    [Authorize(Roles = "Admin")]
+    //[Authorize(Roles = "Admin")]
     [HttpGet]
     public async Task<ActionResult<PagedResponse<List<InvoiceDTO>>>> GetInvoices(
         [FromServices] IInvoiceService service,
@@ -27,7 +27,7 @@ public class InvoicesController : ControllerBase
     }
 
     // https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/ETag
-    [Authorize(Roles = "Admin")]
+    //[Authorize(Roles = "Admin")]
     [HttpPut("{id:int}")]
     public async Task<ActionResult<InvoiceDTO>> UpdateInvoice(
         int id,
@@ -44,7 +44,7 @@ public class InvoicesController : ControllerBase
         return Ok(updated);
     }
 
-    [Authorize(Roles = "Admin")]
+    //[Authorize(Roles = "Admin")]
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> DeleteInvoice(
         int id,

@@ -329,24 +329,14 @@ export class InvoicesClient {
         this.baseUrl = baseUrl ?? "";
     }
 
-    getInvoices(invoiceNumber?: string | null | undefined, customerName?: string | null | undefined, customerBusinessId?: string | null | undefined, status?: InvoiceStatus | null | undefined, issueDateFrom?: string | null | undefined, issueDateTo?: string | null | undefined, dueDateFrom?: string | null | undefined, dueDateTo?: string | null | undefined, sortBy?: string | null | undefined, direction?: SortDirection | undefined, pageNumber?: number | undefined, pageSize?: number | undefined): Observable<PagedResponseOfListOfInvoiceDTO> {
+    getInvoices(customerName_Operator?: ConditionType | null | undefined, customerName_Values?: string[] | undefined, sortBy?: string | null | undefined, direction?: SortDirection | undefined, pageNumber?: number | undefined, pageSize?: number | undefined): Observable<PagedResponseOfListOfInvoiceDTO> {
         let url_ = this.baseUrl + "/api/invoices?";
-        if (invoiceNumber !== undefined && invoiceNumber !== null)
-            url_ += "InvoiceNumber=" + encodeURIComponent("" + invoiceNumber) + "&";
-        if (customerName !== undefined && customerName !== null)
-            url_ += "CustomerName=" + encodeURIComponent("" + customerName) + "&";
-        if (customerBusinessId !== undefined && customerBusinessId !== null)
-            url_ += "CustomerBusinessId=" + encodeURIComponent("" + customerBusinessId) + "&";
-        if (status !== undefined && status !== null)
-            url_ += "Status=" + encodeURIComponent("" + status) + "&";
-        if (issueDateFrom !== undefined && issueDateFrom !== null)
-            url_ += "IssueDateFrom=" + encodeURIComponent("" + issueDateFrom) + "&";
-        if (issueDateTo !== undefined && issueDateTo !== null)
-            url_ += "IssueDateTo=" + encodeURIComponent("" + issueDateTo) + "&";
-        if (dueDateFrom !== undefined && dueDateFrom !== null)
-            url_ += "DueDateFrom=" + encodeURIComponent("" + dueDateFrom) + "&";
-        if (dueDateTo !== undefined && dueDateTo !== null)
-            url_ += "DueDateTo=" + encodeURIComponent("" + dueDateTo) + "&";
+        if (customerName_Operator !== undefined && customerName_Operator !== null)
+            url_ += "CustomerName.Operator=" + encodeURIComponent("" + customerName_Operator) + "&";
+        if (customerName_Values === null)
+            throw new globalThis.Error("The parameter 'customerName_Values' cannot be null.");
+        else if (customerName_Values !== undefined)
+            customerName_Values && customerName_Values.forEach(item => { url_ += "CustomerName.Values=" + encodeURIComponent("" + item) + "&"; });
         if (sortBy !== undefined && sortBy !== null)
             url_ += "SortBy=" + encodeURIComponent("" + sortBy) + "&";
         if (direction === null)
@@ -956,6 +946,23 @@ export enum InvoiceStatus {
     Paid = 2,
     Overdue = 3,
     Cancelled = 4,
+}
+
+export enum ConditionType {
+    Equals = "Equals",
+    GreaterThan = "GreaterThan",
+    LessThan = "LessThan",
+    GreaterThanOrEqual = "GreaterThanOrEqual",
+    LessThanOrEqual = "LessThanOrEqual",
+    Between = "Between",
+    StartsWith = "StartsWith",
+    Contains = "Contains",
+    In = "In",
+    NotIn = "NotIn",
+    NotEquals = "NotEquals",
+    EndsWith = "EndsWith",
+    IsNull = "IsNull",
+    IsNotNull = "IsNotNull",
 }
 
 export enum SortDirection {

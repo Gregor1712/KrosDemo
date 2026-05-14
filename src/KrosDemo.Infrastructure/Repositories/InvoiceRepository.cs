@@ -30,10 +30,12 @@ public class InvoiceRepository : IInvoiceRepository
         CancellationToken cancellationToken = default)
     {
         var query = _context.Invoices
+            .AsNoTracking()
             .Include(i => i.Items)
             .AsQueryable();
 
-        query = ApplyFilters(query, filter);
+        //query = ApplyFilters(query, filter);
+        query = filter.Apply(query);
         var totalCount = await query.CountAsync(cancellationToken);
 
         query = ApplySort(query, sort);
@@ -107,34 +109,34 @@ public class InvoiceRepository : IInvoiceRepository
         throw new ConcurrencyConflictException(nameof(Invoice), id, current);
     }
 
-    private static IQueryable<Invoice> ApplyFilters(IQueryable<Invoice> query, InvoiceFilter filter)
-    {
-        if (!string.IsNullOrWhiteSpace(filter.InvoiceNumber))
-            query = query.Where(i => i.InvoiceNumber.Contains(filter.InvoiceNumber));
-
-        if (!string.IsNullOrWhiteSpace(filter.CustomerName))
-            query = query.Where(i => i.CustomerName.Contains(filter.CustomerName));
-
-        if (!string.IsNullOrWhiteSpace(filter.CustomerBusinessId))
-            query = query.Where(i => i.CustomerBusinessId == filter.CustomerBusinessId);
-
-        if (filter.Status.HasValue)
-            query = query.Where(i => i.Status == filter.Status.Value);
-
-        if (filter.IssueDateFrom.HasValue)
-            query = query.Where(i => i.IssueDate >= filter.IssueDateFrom.Value);
-
-        if (filter.IssueDateTo.HasValue)
-            query = query.Where(i => i.IssueDate <= filter.IssueDateTo.Value);
-
-        if (filter.DueDateFrom.HasValue)
-            query = query.Where(i => i.DueDate >= filter.DueDateFrom.Value);
-
-        if (filter.DueDateTo.HasValue)
-            query = query.Where(i => i.DueDate <= filter.DueDateTo.Value);
-
-        return query;
-    }
+    // private static IQueryable<Invoice> ApplyFilters(IQueryable<Invoice> query, InvoiceFilter filter)
+    // {
+    //     if (!string.IsNullOrWhiteSpace(filter.InvoiceNumber))
+    //         query = query.Where(i => i.InvoiceNumber.Contains(filter.InvoiceNumber));
+    //
+    //     if (!string.IsNullOrWhiteSpace(filter.CustomerName))
+    //         query = query.Where(i => i.CustomerName.Contains(filter.CustomerName));
+    //
+    //     if (!string.IsNullOrWhiteSpace(filter.CustomerBusinessId))
+    //         query = query.Where(i => i.CustomerBusinessId == filter.CustomerBusinessId);
+    //
+    //     if (filter.Status.HasValue)
+    //         query = query.Where(i => i.Status == filter.Status.Value);
+    //
+    //     if (filter.IssueDateFrom.HasValue)
+    //         query = query.Where(i => i.IssueDate >= filter.IssueDateFrom.Value);
+    //
+    //     if (filter.IssueDateTo.HasValue)
+    //         query = query.Where(i => i.IssueDate <= filter.IssueDateTo.Value);
+    //
+    //     if (filter.DueDateFrom.HasValue)
+    //         query = query.Where(i => i.DueDate >= filter.DueDateFrom.Value);
+    //
+    //     if (filter.DueDateTo.HasValue)
+    //         query = query.Where(i => i.DueDate <= filter.DueDateTo.Value);
+    //
+    //     return query;
+    // }
 
     private static IQueryable<Invoice> ApplySort(IQueryable<Invoice> query, SortFilter sort)
     {
