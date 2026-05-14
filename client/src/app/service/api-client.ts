@@ -329,14 +329,38 @@ export class InvoicesClient {
         this.baseUrl = baseUrl ?? "";
     }
 
-    getInvoices(customerName_Operator?: ConditionType | null | undefined, customerName_Values?: string[] | undefined, description_Operator?: ConditionType | null | undefined, description_Values?: string[] | undefined, sortBy?: string | null | undefined, direction?: SortDirection | undefined, pageNumber?: number | undefined, pageSize?: number | undefined): Observable<PagedResponseOfListOfInvoiceDTO> {
+    getInvoices(invoiceNumber_Operator?: ConditionType | null | undefined, invoiceNumber_Values?: string[] | undefined, customerName_Operator?: ConditionType | null | undefined, customerName_Values?: string[] | undefined, customerBusinessId_Operator?: ConditionType | null | undefined, customerBusinessId_Values?: string[] | undefined, issueDate_Operator?: ConditionType | null | undefined, issueDate_Values?: string[] | undefined, dueDate_Operator?: ConditionType | null | undefined, dueDate_Values?: string[] | undefined, description_Operator?: ConditionType | null | undefined, description_Values?: string[] | undefined, sortBy?: string | null | undefined, direction?: SortDirection | undefined, pageNumber?: number | undefined, pageSize?: number | undefined): Observable<PagedResponseOfListOfInvoiceDTO> {
         let url_ = this.baseUrl + "/api/invoices?";
+        if (invoiceNumber_Operator !== undefined && invoiceNumber_Operator !== null)
+            url_ += "InvoiceNumber.Operator=" + encodeURIComponent("" + invoiceNumber_Operator) + "&";
+        if (invoiceNumber_Values === null)
+            throw new globalThis.Error("The parameter 'invoiceNumber_Values' cannot be null.");
+        else if (invoiceNumber_Values !== undefined)
+            invoiceNumber_Values && invoiceNumber_Values.forEach(item => { url_ += "InvoiceNumber.Values=" + encodeURIComponent("" + item) + "&"; });
         if (customerName_Operator !== undefined && customerName_Operator !== null)
             url_ += "CustomerName.Operator=" + encodeURIComponent("" + customerName_Operator) + "&";
         if (customerName_Values === null)
             throw new globalThis.Error("The parameter 'customerName_Values' cannot be null.");
         else if (customerName_Values !== undefined)
             customerName_Values && customerName_Values.forEach(item => { url_ += "CustomerName.Values=" + encodeURIComponent("" + item) + "&"; });
+        if (customerBusinessId_Operator !== undefined && customerBusinessId_Operator !== null)
+            url_ += "CustomerBusinessId.Operator=" + encodeURIComponent("" + customerBusinessId_Operator) + "&";
+        if (customerBusinessId_Values === null)
+            throw new globalThis.Error("The parameter 'customerBusinessId_Values' cannot be null.");
+        else if (customerBusinessId_Values !== undefined)
+            customerBusinessId_Values && customerBusinessId_Values.forEach(item => { url_ += "CustomerBusinessId.Values=" + encodeURIComponent("" + item) + "&"; });
+        if (issueDate_Operator !== undefined && issueDate_Operator !== null)
+            url_ += "IssueDate.Operator=" + encodeURIComponent("" + issueDate_Operator) + "&";
+        if (issueDate_Values === null)
+            throw new globalThis.Error("The parameter 'issueDate_Values' cannot be null.");
+        else if (issueDate_Values !== undefined)
+            issueDate_Values && issueDate_Values.forEach(item => { url_ += "IssueDate.Values=" + encodeURIComponent("" + item) + "&"; });
+        if (dueDate_Operator !== undefined && dueDate_Operator !== null)
+            url_ += "DueDate.Operator=" + encodeURIComponent("" + dueDate_Operator) + "&";
+        if (dueDate_Values === null)
+            throw new globalThis.Error("The parameter 'dueDate_Values' cannot be null.");
+        else if (dueDate_Values !== undefined)
+            dueDate_Values && dueDate_Values.forEach(item => { url_ += "DueDate.Values=" + encodeURIComponent("" + item) + "&"; });
         if (description_Operator !== undefined && description_Operator !== null)
             url_ += "Description.Operator=" + encodeURIComponent("" + description_Operator) + "&";
         if (description_Values === null)
