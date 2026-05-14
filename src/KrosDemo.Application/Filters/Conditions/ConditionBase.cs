@@ -35,7 +35,7 @@ public class ConditionBase<T>
         NavigationProperty = navigationProperty;
     }
 
-    public Expression? BuildExpression(ParameterExpression parameter)
+    public Expression BuildExpression(ParameterExpression parameter)
     {
         if (Operator != ConditionType.IsNull && Operator != ConditionType.IsNotNull && Values.Count == 0)
         {
@@ -48,13 +48,8 @@ public class ConditionBase<T>
             return BuildExpression(property, Values, Operator);
         }
 
-        // Navigate to collection: e.g. x.Items
         var collection = Expression.Property(parameter, NavigationProperty);
-
-        // Get the element type of the collection (e.g. InvoiceItem)
         var elementType = collection.Type.GetGenericArguments()[0];
-
-        // Build: item => item.Description.Contains("value")
         var childParam = Expression.Parameter(elementType, "child");
         var childProperty = Expression.Property(childParam, Name);
         var childCondition = BuildExpression(childProperty, Values, Operator);
