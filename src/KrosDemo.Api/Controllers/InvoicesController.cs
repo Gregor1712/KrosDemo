@@ -38,7 +38,6 @@ public class InvoicesController : BaseController
         return Created($"api/invoices/{created.Id}", created);
     }
 
-    // https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/ETag
     //[Authorize(Roles = "Admin")]
     [HttpPut("{id:int}")]
     public async Task<ActionResult<InvoiceDTO>> UpdateInvoice(

@@ -40,7 +40,6 @@ public class InvoiceRepository : IInvoiceRepository
             .Include(i => i.Items)
             .AsQueryable();
 
-        //query = ApplyFilters(query, filter);
         query = filter.Apply(query);
         var totalCount = await query.CountAsync(cancellationToken);
 
