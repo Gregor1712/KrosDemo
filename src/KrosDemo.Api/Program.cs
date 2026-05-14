@@ -40,6 +40,7 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IJwtService, JwtService>();
 
 builder.Services.AddSingleton<ApiProblemDetailsFactory>();
+builder.Services.AddDistributedMemoryCache();
 
 builder.Services.AddProblemDetails();
 
@@ -90,6 +91,7 @@ builder.Services.AddHostedService<DatabaseInitializerHostedService>();
 var app = builder.Build();
 
 app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
+app.UseMiddleware<IdempotencyMiddleware>();
 
 app.UseCors(x => x
     .AllowAnyHeader()
