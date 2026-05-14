@@ -110,3 +110,6 @@ app.UseHttpsRedirection();
 
 app.MapControllers();
 app.Run();
+
+// Exposed so WebApplicationFactory<Program> in tests can find an entry point.
+public partial class Program;
