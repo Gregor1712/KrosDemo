@@ -1,25 +1,28 @@
 namespace KrosDemo.Api.Infrastructure;
 
-public class GlobalExceptionHandlingMiddleware : IMiddleware
+public class GlobalExceptionHandlingMiddleware
 {
     private const string ProblemJsonContentType = "application/problem+json";
 
+    private readonly RequestDelegate _next;
     private readonly ILogger<GlobalExceptionHandlingMiddleware> _logger;
     private readonly ApiProblemDetailsFactory _factory;
 
     public GlobalExceptionHandlingMiddleware(
+        RequestDelegate next,
         ILogger<GlobalExceptionHandlingMiddleware> logger,
         ApiProblemDetailsFactory factory)
     {
+        _next = next;
         _logger = logger;
         _factory = factory;
     }
 
-    public async Task InvokeAsync(HttpContext context, RequestDelegate next)
+    public async Task InvokeAsync(HttpContext context)
     {
         try
         {
-            await next(context);
+            await _next(context);
         }
         catch (Exception ex)
         {

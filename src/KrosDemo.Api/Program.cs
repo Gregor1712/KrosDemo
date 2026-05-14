@@ -36,7 +36,6 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IJwtService, JwtService>();
 
 builder.Services.AddSingleton<ApiProblemDetailsFactory>();
-builder.Services.AddTransient<GlobalExceptionHandlingMiddleware>();
 
 builder.Services.AddProblemDetails();
 
