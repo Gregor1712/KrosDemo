@@ -14,6 +14,27 @@ namespace KrosDemo.Api.Controllers;
 public class InvoiceItemsController : ControllerBase
 {
     [Authorize(Roles = "Admin")]
+    [HttpGet]
+    public async Task<ActionResult<List<InvoiceItemDTO>>> GetAllInvoiceItems(
+        [FromServices] IInvoiceItemService service,
+        CancellationToken cancellationToken)
+    {
+        return Ok(await service.GetAllAsync(cancellationToken));
+    }
+
+    [Authorize(Roles = "Admin")]
+    [HttpGet("{id:int}")]
+    public async Task<ActionResult<InvoiceItemDTO>> GetInvoiceItemById(
+        int id,
+        [FromServices] IInvoiceItemService service,
+        CancellationToken cancellationToken)
+    {
+        var item = await service.GetByIdAsync(id, cancellationToken);
+        Response.Headers[HeaderNames.ETag] = ETag.Format(item.RowVersion);
+        return Ok(item);
+    }
+
+    [Authorize(Roles = "Admin")]
     [HttpPut("{id:int}")]
     public async Task<ActionResult<InvoiceItemDTO>> UpdateInvoiceItem(
         int id,

@@ -14,6 +14,11 @@ public class InvoiceItemRepository : IInvoiceItemRepository
         _context = context;
     }
 
+    public async Task<List<InvoiceItem>> GetAllAsync(CancellationToken cancellationToken = default)
+    {
+        return await _context.InvoiceItems.ToListAsync(cancellationToken);
+    }
+
     public async Task<InvoiceItem?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
     {
         return await _context.InvoiceItems.FindAsync([id], cancellationToken);

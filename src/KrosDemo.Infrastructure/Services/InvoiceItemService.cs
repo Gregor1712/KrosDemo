@@ -16,6 +16,20 @@ public class InvoiceItemService : IInvoiceItemService
         _mapper = mapper;
     }
 
+    public async Task<List<InvoiceItemDTO>> GetAllAsync(CancellationToken cancellationToken = default)
+    {
+        var items = await _repository.GetAllAsync(cancellationToken);
+        return _mapper.Map<List<InvoiceItemDTO>>(items);
+    }
+
+    public async Task<InvoiceItemDTO> GetByIdAsync(int id, CancellationToken cancellationToken = default)
+    {
+        var item = await _repository.GetByIdAsync(id, cancellationToken)
+            ?? throw new KeyNotFoundException($"InvoiceItem {id} not found.");
+
+        return _mapper.Map<InvoiceItemDTO>(item);
+    }
+
     public async Task<InvoiceItemDTO> UpdateInvoiceItemAsync(
         int id,
         InvoiceItemUpdateDTO dto,

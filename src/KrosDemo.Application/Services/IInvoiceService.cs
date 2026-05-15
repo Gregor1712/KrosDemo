@@ -6,6 +6,8 @@ namespace KrosDemo.Application.Services;
 
 public interface IInvoiceService
 {
+    Task<InvoiceDTO> GetInvoiceByIdAsync(int id, CancellationToken cancellationToken = default);
+
     Task<PagedResponse<List<InvoiceDTO>>> GetInvoices(
         InvoiceFilter filter,
         SortFilter sort,

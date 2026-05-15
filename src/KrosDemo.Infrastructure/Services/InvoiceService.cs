@@ -18,6 +18,14 @@ public class InvoiceService : IInvoiceService
         _mapper = mapper;
     }
 
+    public async Task<InvoiceDTO> GetInvoiceByIdAsync(int id, CancellationToken cancellationToken = default)
+    {
+        var invoice = await _repository.GetByIdAsync(id, cancellationToken)
+            ?? throw new KeyNotFoundException($"Invoice {id} not found.");
+
+        return _mapper.Map<InvoiceDTO>(invoice);
+    }
+
     public async Task<PagedResponse<List<InvoiceDTO>>> GetInvoices(
         InvoiceFilter filter,
         SortFilter sort,
