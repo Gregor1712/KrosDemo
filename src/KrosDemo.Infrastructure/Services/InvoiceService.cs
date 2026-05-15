@@ -33,7 +33,7 @@ public class InvoiceService : IInvoiceService
         CancellationToken cancellationToken = default)
     {
         var result = await _repository.GetPagedAsync(filter, sort, pagination, cancellationToken);
-        var dtos = _mapper.Map<List<InvoiceDTO>>(result);
+        var dtos = _mapper.Map<List<InvoiceDTO>>(result.Data);
         return new(dtos, pagination, result.TotalRecords);
     }
 

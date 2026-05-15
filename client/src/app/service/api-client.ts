@@ -596,7 +596,7 @@ export class InvoicesClient {
         return _observableOf(null as any);
     }
 
-    getInvoices(invoiceNumber_Operator?: ConditionType | null | undefined, invoiceNumber_Values?: string[] | undefined, customerName_Operator?: ConditionType | null | undefined, customerName_Values?: string[] | undefined, customerBusinessId_Operator?: ConditionType | null | undefined, customerBusinessId_Values?: string[] | undefined, issueDate_Operator?: ConditionType | null | undefined, issueDate_Values?: string[] | undefined, dueDate_Operator?: ConditionType | null | undefined, dueDate_Values?: string[] | undefined, description_Operator?: ConditionType | null | undefined, description_Values?: string[] | undefined, sortProperty?: string | undefined, sortDirection?: SortType | undefined, pageNumber?: number | null | undefined, pageSize?: number | null | undefined): Observable<PagedResponseOfListOfInvoiceDTO> {
+    getInvoices(invoiceNumber_Operator?: ConditionType | null | undefined, invoiceNumber_Values?: string[] | undefined, customerName_Operator?: ConditionType | null | undefined, customerName_Values?: string[] | undefined, customerBusinessId_Operator?: ConditionType | null | undefined, customerBusinessId_Values?: string[] | undefined, issueDate_Operator?: ConditionType | null | undefined, issueDate_Values?: string[] | undefined, dueDate_Operator?: ConditionType | null | undefined, dueDate_Values?: string[] | undefined, description_Operator?: ConditionType | null | undefined, description_Values?: string[] | undefined, sortProperty?: string | null | undefined, sortDirection?: SortType | undefined, pageNumber?: number | null | undefined, pageSize?: number | null | undefined): Observable<PagedResponseOfListOfInvoiceDTO> {
         let url_ = this.baseUrl + "/api/invoices?";
         if (invoiceNumber_Operator !== undefined && invoiceNumber_Operator !== null)
             url_ += "InvoiceNumber.Operator=" + encodeURIComponent("" + invoiceNumber_Operator) + "&";
@@ -634,9 +634,7 @@ export class InvoicesClient {
             throw new globalThis.Error("The parameter 'description_Values' cannot be null.");
         else if (description_Values !== undefined)
             description_Values && description_Values.forEach(item => { url_ += "Description.Values=" + encodeURIComponent("" + item) + "&"; });
-        if (sortProperty === null)
-            throw new globalThis.Error("The parameter 'sortProperty' cannot be null.");
-        else if (sortProperty !== undefined)
+        if (sortProperty !== undefined && sortProperty !== null)
             url_ += "SortProperty=" + encodeURIComponent("" + sortProperty) + "&";
         if (sortDirection === null)
             throw new globalThis.Error("The parameter 'sortDirection' cannot be null.");

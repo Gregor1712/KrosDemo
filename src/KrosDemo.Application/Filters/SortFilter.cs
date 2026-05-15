@@ -11,7 +11,7 @@ public class SortFilter
         Descending
     }
 
-    public string SortProperty { get; set; }
+    public string? SortProperty { get; set; }
     public SortType SortDirection { get; set; } = SortType.Ascending;
 
     public static SortFilter None()
