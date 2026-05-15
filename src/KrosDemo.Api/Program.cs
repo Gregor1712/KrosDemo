@@ -3,11 +3,14 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using NLog.Web;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using KrosDemo.Api.Infrastructure;
 using KrosDemo.Application.Interfaces;
 using KrosDemo.Application.Mapping;
 using KrosDemo.Application.Repositories;
 using KrosDemo.Application.Services;
+using KrosDemo.Application.Validators;
 using KrosDemo.Infrastructure.Data;
 using KrosDemo.Infrastructure.Identity;
 using KrosDemo.Infrastructure.Repositories;
@@ -67,6 +70,9 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddAutoMapper(typeof(AutoMapperProfiles));
 
+builder.Services.AddValidatorsFromAssemblyContaining<InvoiceCreateValidator>();
+builder.Services.AddFluentValidationAutoValidation();
+
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
@@ -110,6 +116,3 @@ app.UseHttpsRedirection();
 
 app.MapControllers();
 app.Run();
-
-// Exposed so WebApplicationFactory<Program> in tests can find an entry point.
-public partial class Program;

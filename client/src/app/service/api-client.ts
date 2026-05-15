@@ -27,7 +27,7 @@ export class AuthClient {
         this.baseUrl = baseUrl ?? "";
     }
 
-    register(request: RegisterRequest): Observable<FileResponse> {
+    register(request: RegisterRequestDTO): Observable<FileResponse> {
         let url_ = this.baseUrl + "/api/Auth/register";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -83,7 +83,7 @@ export class AuthClient {
         return _observableOf(null as any);
     }
 
-    login(request: LoginRequest): Observable<FileResponse> {
+    login(request: LoginRequestDTO): Observable<FileResponse> {
         let url_ = this.baseUrl + "/api/Auth/login";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -670,11 +670,11 @@ export class InvoicesSpecClient {
     }
 }
 
-export class RegisterRequest implements IRegisterRequest {
+export class RegisterRequestDTO implements IRegisterRequestDTO {
     username?: string;
     password?: string;
 
-    constructor(data?: IRegisterRequest) {
+    constructor(data?: IRegisterRequestDTO) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -690,9 +690,9 @@ export class RegisterRequest implements IRegisterRequest {
         }
     }
 
-    static fromJS(data: any): RegisterRequest {
+    static fromJS(data: any): RegisterRequestDTO {
         data = typeof data === 'object' ? data : {};
-        let result = new RegisterRequest();
+        let result = new RegisterRequestDTO();
         result.init(data);
         return result;
     }
@@ -705,16 +705,16 @@ export class RegisterRequest implements IRegisterRequest {
     }
 }
 
-export interface IRegisterRequest {
+export interface IRegisterRequestDTO {
     username?: string;
     password?: string;
 }
 
-export class LoginRequest implements ILoginRequest {
+export class LoginRequestDTO implements ILoginRequestDTO {
     username?: string;
     password?: string;
 
-    constructor(data?: ILoginRequest) {
+    constructor(data?: ILoginRequestDTO) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -730,9 +730,9 @@ export class LoginRequest implements ILoginRequest {
         }
     }
 
-    static fromJS(data: any): LoginRequest {
+    static fromJS(data: any): LoginRequestDTO {
         data = typeof data === 'object' ? data : {};
-        let result = new LoginRequest();
+        let result = new LoginRequestDTO();
         result.init(data);
         return result;
     }
@@ -745,7 +745,7 @@ export class LoginRequest implements ILoginRequest {
     }
 }
 
-export interface ILoginRequest {
+export interface ILoginRequestDTO {
     username?: string;
     password?: string;
 }

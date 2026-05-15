@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using KrosDemo.Application.DTOs;
 using KrosDemo.Application.Services;
 
 namespace KrosDemo.Api.Controllers;
@@ -11,7 +12,7 @@ public class AuthController : ControllerBase
     [HttpPost("register")]
     public async Task<IActionResult> Register(
         [FromServices] IAuthService authService,
-        [FromBody] RegisterRequest request,
+        [FromBody] RegisterRequestDTO request,
         CancellationToken cancellationToken)
     {
         try
@@ -28,7 +29,7 @@ public class AuthController : ControllerBase
     [HttpPost("login")]
     public async Task<IActionResult> Login(
         [FromServices] IAuthService authService,
-        [FromBody] LoginRequest request,
+        [FromBody] LoginRequestDTO request,
         CancellationToken cancellationToken)
     {
         try
@@ -48,7 +49,4 @@ public class AuthController : ControllerBase
     {
         return Ok(new { message = "Logged out successfully" });
     }
-
-    public record LoginRequest(string Username, string Password);
-    public record RegisterRequest(string Username, string Password);
 }

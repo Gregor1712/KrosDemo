@@ -14,7 +14,7 @@ public static class ETag
 
         var value = raw.Trim();
         if (value.StartsWith("W/", StringComparison.Ordinal))
-            value = value[2..];
+            value = value.Substring(2);
         value = value.Trim('"');
 
         try
