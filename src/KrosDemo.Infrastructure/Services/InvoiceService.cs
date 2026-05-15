@@ -34,7 +34,7 @@ public class InvoiceService : IInvoiceService
     {
         var result = await _repository.GetPagedAsync(filter, sort, pagination, cancellationToken);
         var dtos = _mapper.Map<List<InvoiceDTO>>(result.Data);
-        return new(dtos, pagination, result.TotalRecords);
+        return new PagedResponse<List<InvoiceDTO>>(dtos, pagination, result.TotalRecords);
     }
 
     public async Task<InvoiceDTO> CreateInvoiceAsync(
