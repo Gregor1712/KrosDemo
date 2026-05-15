@@ -80,4 +80,19 @@ public class InvoicesController : ControllerBase
         await service.DeleteInvoiceAsync(id, rowVersion, cancellationToken);
         return NoContent();
     }
+
+    //[Authorize(Roles = "Admin")]
+    [HttpPost("{id:int}/send")]
+    public async Task<ActionResult<InvoiceDTO>> SendInvoice(
+        int id,
+        [FromServices] IInvoiceService service,
+        CancellationToken cancellationToken)
+    {
+        var rowVersion = ETag.TryParseIfMatch(Request.Headers)
+            ?? throw PreconditionRequiredException.MissingIfMatch();
+
+        var sent = await service.SendInvoiceAsync(id, rowVersion, cancellationToken);
+        Response.Headers[HeaderNames.ETag] = ETag.Format(sent.RowVersion);
+        return Ok(sent);
+    }
 }

@@ -41,7 +41,21 @@ public class InvoiceService : IInvoiceService
         CancellationToken cancellationToken = default)
     {
         var invoice = _mapper.Map<Domain.Entities.Invoice>(dto);
+        invoice.MarkAsIssued();
         await _repository.AddAsync(invoice, cancellationToken);
+        return _mapper.Map<InvoiceDTO>(invoice);
+    }
+
+    public async Task<InvoiceDTO> SendInvoiceAsync(
+        int id,
+        byte[] rowVersion,
+        CancellationToken cancellationToken = default)
+    {
+        var invoice = await _repository.GetByIdAsync(id, cancellationToken)
+            ?? throw new KeyNotFoundException($"Invoice {id} not found.");
+
+        invoice.Send();
+        await _repository.UpdateAsync(invoice, rowVersion, cancellationToken);
         return _mapper.Map<InvoiceDTO>(invoice);
     }
 

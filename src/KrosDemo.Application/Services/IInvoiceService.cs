@@ -28,4 +28,9 @@ public interface IInvoiceService
         int id,
         byte[] rowVersion,
         CancellationToken cancellationToken = default);
+
+    Task<InvoiceDTO> SendInvoiceAsync(
+        int id,
+        byte[] rowVersion,
+        CancellationToken cancellationToken = default);
 }

@@ -741,6 +741,57 @@ export class InvoicesClient {
         }
         return _observableOf(null as any);
     }
+
+    sendInvoice(id: number): Observable<InvoiceDTO> {
+        let url_ = this.baseUrl + "/api/invoices/{id}/send";
+        if (id === undefined || id === null)
+            throw new globalThis.Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processSendInvoice(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processSendInvoice(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<InvoiceDTO>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<InvoiceDTO>;
+        }));
+    }
+
+    protected processSendInvoice(response: HttpResponseBase): Observable<InvoiceDTO> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = InvoiceDTO.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
 }
 
 @Injectable({
@@ -1443,6 +1494,7 @@ export interface IPaginationSpecOfInvoice {
 
 export class BaseEntity implements IBaseEntity {
     id?: number;
+    domainEvents?: IDomainEvent[];
 
     constructor(data?: IBaseEntity) {
         if (data) {
@@ -1456,6 +1508,11 @@ export class BaseEntity implements IBaseEntity {
     init(_data?: any) {
         if (_data) {
             this.id = _data["id"];
+            if (Array.isArray(_data["domainEvents"])) {
+                this.domainEvents = [] as any;
+                for (let item of _data["domainEvents"])
+                    this.domainEvents!.push(IDomainEvent.fromJS(item));
+            }
         }
     }
 
@@ -1469,12 +1526,18 @@ export class BaseEntity implements IBaseEntity {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
+        if (Array.isArray(this.domainEvents)) {
+            data["domainEvents"] = [];
+            for (let item of this.domainEvents)
+                data["domainEvents"].push(item ? item.toJSON() : undefined as any);
+        }
         return data;
     }
 }
 
 export interface IBaseEntity {
     id?: number;
+    domainEvents?: IDomainEvent[];
 }
 
 export class Invoice extends BaseEntity implements IInvoice {
@@ -1609,6 +1672,40 @@ export interface IInvoiceItem extends IBaseEntity {
     invoiceId?: number;
     rowVersion?: string;
     invoice?: Invoice;
+}
+
+export abstract class IDomainEvent implements IIDomainEvent {
+    occurredOnUtc?: string;
+
+    constructor(data?: IIDomainEvent) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.occurredOnUtc = _data["occurredOnUtc"];
+        }
+    }
+
+    static fromJS(data: any): IDomainEvent {
+        data = typeof data === 'object' ? data : {};
+        throw new Error("The abstract class 'IDomainEvent' cannot be instantiated.");
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["occurredOnUtc"] = this.occurredOnUtc;
+        return data;
+    }
+}
+
+export interface IIDomainEvent {
+    occurredOnUtc?: string;
 }
 
 export interface FileResponse {

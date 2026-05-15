@@ -8,11 +8,15 @@ using FluentValidation.AspNetCore;
 using KrosDemo.Api.Infrastructure;
 using KrosDemo.Application.Interfaces;
 using KrosDemo.Application.Mapping;
+using KrosDemo.Application.Outbox;
+using KrosDemo.Application.Outbox.Handlers;
 using KrosDemo.Application.Repositories;
 using KrosDemo.Application.Services;
 using KrosDemo.Application.Validators;
+using KrosDemo.Domain.Events;
 using KrosDemo.Infrastructure.Data;
 using KrosDemo.Infrastructure.Identity;
+using KrosDemo.Infrastructure.Outbox;
 using KrosDemo.Infrastructure.Repositories;
 using KrosDemo.Infrastructure.Seed;
 using KrosDemo.Infrastructure.Services;
@@ -91,6 +95,10 @@ builder.Services.AddOpenApiDocument(config =>
 });
 
 builder.Services.AddHostedService<DatabaseInitializerHostedService>();
+
+builder.Services.AddScoped<IOutboxMessageHandler<InvoiceIssuedEvent>, InvoiceIssuedAuditHandler>();
+builder.Services.AddScoped<IOutboxMessageHandler<InvoiceSentEvent>, InvoiceSentEmailHandler>();
+builder.Services.AddHostedService<OutboxProcessor>();
 
 var app = builder.Build();
 
