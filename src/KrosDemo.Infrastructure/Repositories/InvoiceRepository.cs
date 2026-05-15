@@ -1,3 +1,4 @@
+using KrosDemo.Application.DTOs;
 using Microsoft.EntityFrameworkCore;
 using KrosDemo.Application.Filters;
 using KrosDemo.Application.Repositories;
@@ -29,7 +30,7 @@ public class InvoiceRepository : IInvoiceRepository
         return invoice;
     }
 
-    public async Task<(IReadOnlyList<Invoice> Items, int TotalCount)> GetPagedAsync(
+    public async Task<DatabaseResult<IReadOnlyList<Invoice>>> GetPagedAsync(
         InvoiceFilter filter,
         SortFilter sort,
         PaginationFilter pagination,
@@ -41,17 +42,13 @@ public class InvoiceRepository : IInvoiceRepository
             .AsQueryable();
 
         query = filter.Apply(query);
-        var totalCount = await query.CountAsync(cancellationToken);
+        var count = await query.CountAsync(cancellationToken);
 
-        query = ApplySort(query, sort);
+        query = sort.Apply(query);
+        query = pagination.ApplyOrderById(query);
 
-        var skip = (pagination.PageNumber - 1) * pagination.PageSize;
-        var items = await query
-            .Skip(skip)
-            .Take(pagination.PageSize)
-            .ToListAsync(cancellationToken);
-
-        return (items, totalCount);
+        var data = await query.ToListAsync(cancellationToken);
+        return new DatabaseResult<IReadOnlyList<Invoice>>(data, count);
     }
 
     public async Task UpdateAsync(Invoice invoice, byte[] originalRowVersion, CancellationToken cancellationToken = default)
@@ -85,49 +82,5 @@ public class InvoiceRepository : IInvoiceRepository
         {
             await ConcurrencyConflictMapper.HandleDeleteConflictAsync<Invoice>(ex, id, cancellationToken);
         }
-    }
-
-    // private static IQueryable<Invoice> ApplyFilters(IQueryable<Invoice> query, InvoiceFilter filter)
-    // {
-    //     if (!string.IsNullOrWhiteSpace(filter.InvoiceNumber))
-    //         query = query.Where(i => i.InvoiceNumber.Contains(filter.InvoiceNumber));
-    //
-    //     if (!string.IsNullOrWhiteSpace(filter.CustomerName))
-    //         query = query.Where(i => i.CustomerName.Contains(filter.CustomerName));
-    //
-    //     if (!string.IsNullOrWhiteSpace(filter.CustomerBusinessId))
-    //         query = query.Where(i => i.CustomerBusinessId == filter.CustomerBusinessId);
-    //
-    //     if (filter.Status.HasValue)
-    //         query = query.Where(i => i.Status == filter.Status.Value);
-    //
-    //     if (filter.IssueDateFrom.HasValue)
-    //         query = query.Where(i => i.IssueDate >= filter.IssueDateFrom.Value);
-    //
-    //     if (filter.IssueDateTo.HasValue)
-    //         query = query.Where(i => i.IssueDate <= filter.IssueDateTo.Value);
-    //
-    //     if (filter.DueDateFrom.HasValue)
-    //         query = query.Where(i => i.DueDate >= filter.DueDateFrom.Value);
-    //
-    //     if (filter.DueDateTo.HasValue)
-    //         query = query.Where(i => i.DueDate <= filter.DueDateTo.Value);
-    //
-    //     return query;
-    // }
-
-    private static IQueryable<Invoice> ApplySort(IQueryable<Invoice> query, SortFilter sort)
-    {
-        var descending = sort.Direction == SortDirection.Desc;
-
-        return sort.SortBy?.ToLowerInvariant() switch
-        {
-            "invoicenumber" => descending ? query.OrderByDescending(i => i.InvoiceNumber) : query.OrderBy(i => i.InvoiceNumber),
-            "customername"  => descending ? query.OrderByDescending(i => i.CustomerName)  : query.OrderBy(i => i.CustomerName),
-            "issuedate"     => descending ? query.OrderByDescending(i => i.IssueDate)     : query.OrderBy(i => i.IssueDate),
-            "duedate"       => descending ? query.OrderByDescending(i => i.DueDate)       : query.OrderBy(i => i.DueDate),
-            "status"        => descending ? query.OrderByDescending(i => i.Status)        : query.OrderBy(i => i.Status),
-            _               => query.OrderByDescending(i => i.IssueDate),
-        };
     }
 }

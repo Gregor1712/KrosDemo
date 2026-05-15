@@ -2,7 +2,7 @@ using AutoMapper;
 using KrosDemo.Application.DTOs;
 using KrosDemo.Application.Filters;
 using KrosDemo.Application.Repositories;
-using KrosDemo.Application.RequestHelpers;
+//using KrosDemo.Application.RequestHelpers;
 using KrosDemo.Application.Services;
 
 namespace KrosDemo.Infrastructure.Services;
@@ -32,14 +32,9 @@ public class InvoiceService : IInvoiceService
         PaginationFilter pagination,
         CancellationToken cancellationToken = default)
     {
-        var (items, totalCount) = await _repository.GetPagedAsync(filter, sort, pagination, cancellationToken);
-        var dtos = _mapper.Map<List<InvoiceDTO>>(items);
-
-        return new PagedResponse<List<InvoiceDTO>>(
-            dtos,
-            pagination.PageNumber,
-            pagination.PageSize,
-            totalCount);
+        var result = await _repository.GetPagedAsync(filter, sort, pagination, cancellationToken);
+        var dtos = _mapper.Map<List<InvoiceDTO>>(result);
+        return new(dtos, pagination, result.TotalRecords);
     }
 
     public async Task<InvoiceDTO> CreateInvoiceAsync(

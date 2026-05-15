@@ -1,19 +1,19 @@
 namespace KrosDemo.Application.RequestHelpers;
 
-public class PagedResponse<T>
-{
-    public T Data { get; set; }
-    public int PageNumber { get; set; }
-    public int PageSize { get; set; }
-    public int TotalCount { get; set; }
-    public int TotalPages { get; set; }
-
-    public PagedResponse(T data, int pageNumber, int pageSize, int totalCount)
-    {
-        Data = data;
-        PageNumber = pageNumber;
-        PageSize = pageSize;
-        TotalCount = totalCount;
-        TotalPages = pageSize <= 0 ? 0 : (int)Math.Ceiling(totalCount / (double)pageSize);
-    }
-}
+// public class PagedResponse<T>
+// {
+//     public T Data { get; set; }
+//     public int PageNumber { get; set; }
+//     public int PageSize { get; set; }
+//     public int TotalCount { get; set; }
+//     public int TotalPages { get; set; }
+//
+//     public PagedResponse(T data, int pageNumber, int pageSize, int totalCount)
+//     {
+//         Data = data;
+//         PageNumber = pageNumber;
+//         PageSize = pageSize;
+//         TotalCount = totalCount;
+//         TotalPages = pageSize <= 0 ? 0 : (int)Math.Ceiling(totalCount / (double)pageSize);
+//     }
+// }

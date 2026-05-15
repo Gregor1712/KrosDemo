@@ -205,7 +205,7 @@ export class InvoiceItemsClient {
         this.baseUrl = baseUrl ?? "";
     }
 
-    getAll(): Observable<InvoiceItemDTO[]> {
+    getAllInvoiceItems(): Observable<InvoiceItemDTO[]> {
         let url_ = this.baseUrl + "/api/invoiceitems";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -218,11 +218,11 @@ export class InvoiceItemsClient {
         };
 
         return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetAll(response_);
+            return this.processGetAllInvoiceItems(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processGetAll(response_ as any);
+                    return this.processGetAllInvoiceItems(response_ as any);
                 } catch (e) {
                     return _observableThrow(e) as any as Observable<InvoiceItemDTO[]>;
                 }
@@ -231,7 +231,7 @@ export class InvoiceItemsClient {
         }));
     }
 
-    protected processGetAll(response: HttpResponseBase): Observable<InvoiceItemDTO[]> {
+    protected processGetAllInvoiceItems(response: HttpResponseBase): Observable<InvoiceItemDTO[]> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -260,7 +260,7 @@ export class InvoiceItemsClient {
         return _observableOf(null as any);
     }
 
-    getById(id: number): Observable<InvoiceItemDTO> {
+    getInvoiceItemById(id: number): Observable<InvoiceItemDTO> {
         let url_ = this.baseUrl + "/api/invoiceitems/{id}";
         if (id === undefined || id === null)
             throw new globalThis.Error("The parameter 'id' must be defined.");
@@ -276,11 +276,11 @@ export class InvoiceItemsClient {
         };
 
         return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetById(response_);
+            return this.processGetInvoiceItemById(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processGetById(response_ as any);
+                    return this.processGetInvoiceItemById(response_ as any);
                 } catch (e) {
                     return _observableThrow(e) as any as Observable<InvoiceItemDTO>;
                 }
@@ -289,7 +289,7 @@ export class InvoiceItemsClient {
         }));
     }
 
-    protected processGetById(response: HttpResponseBase): Observable<InvoiceItemDTO> {
+    protected processGetInvoiceItemById(response: HttpResponseBase): Observable<InvoiceItemDTO> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -596,7 +596,7 @@ export class InvoicesClient {
         return _observableOf(null as any);
     }
 
-    getInvoices(invoiceNumber_Operator?: ConditionType | null | undefined, invoiceNumber_Values?: string[] | undefined, customerName_Operator?: ConditionType | null | undefined, customerName_Values?: string[] | undefined, customerBusinessId_Operator?: ConditionType | null | undefined, customerBusinessId_Values?: string[] | undefined, issueDate_Operator?: ConditionType | null | undefined, issueDate_Values?: string[] | undefined, dueDate_Operator?: ConditionType | null | undefined, dueDate_Values?: string[] | undefined, description_Operator?: ConditionType | null | undefined, description_Values?: string[] | undefined, sortBy?: string | null | undefined, direction?: SortDirection | undefined, pageNumber?: number | undefined, pageSize?: number | undefined): Observable<PagedResponseOfListOfInvoiceDTO> {
+    getInvoices(invoiceNumber_Operator?: ConditionType | null | undefined, invoiceNumber_Values?: string[] | undefined, customerName_Operator?: ConditionType | null | undefined, customerName_Values?: string[] | undefined, customerBusinessId_Operator?: ConditionType | null | undefined, customerBusinessId_Values?: string[] | undefined, issueDate_Operator?: ConditionType | null | undefined, issueDate_Values?: string[] | undefined, dueDate_Operator?: ConditionType | null | undefined, dueDate_Values?: string[] | undefined, description_Operator?: ConditionType | null | undefined, description_Values?: string[] | undefined, sortProperty?: string | undefined, sortDirection?: SortType | undefined, pageNumber?: number | null | undefined, pageSize?: number | null | undefined): Observable<PagedResponseOfListOfInvoiceDTO> {
         let url_ = this.baseUrl + "/api/invoices?";
         if (invoiceNumber_Operator !== undefined && invoiceNumber_Operator !== null)
             url_ += "InvoiceNumber.Operator=" + encodeURIComponent("" + invoiceNumber_Operator) + "&";
@@ -634,19 +634,17 @@ export class InvoicesClient {
             throw new globalThis.Error("The parameter 'description_Values' cannot be null.");
         else if (description_Values !== undefined)
             description_Values && description_Values.forEach(item => { url_ += "Description.Values=" + encodeURIComponent("" + item) + "&"; });
-        if (sortBy !== undefined && sortBy !== null)
-            url_ += "SortBy=" + encodeURIComponent("" + sortBy) + "&";
-        if (direction === null)
-            throw new globalThis.Error("The parameter 'direction' cannot be null.");
-        else if (direction !== undefined)
-            url_ += "Direction=" + encodeURIComponent("" + direction) + "&";
-        if (pageNumber === null)
-            throw new globalThis.Error("The parameter 'pageNumber' cannot be null.");
-        else if (pageNumber !== undefined)
+        if (sortProperty === null)
+            throw new globalThis.Error("The parameter 'sortProperty' cannot be null.");
+        else if (sortProperty !== undefined)
+            url_ += "SortProperty=" + encodeURIComponent("" + sortProperty) + "&";
+        if (sortDirection === null)
+            throw new globalThis.Error("The parameter 'sortDirection' cannot be null.");
+        else if (sortDirection !== undefined)
+            url_ += "SortDirection=" + encodeURIComponent("" + sortDirection) + "&";
+        if (pageNumber !== undefined && pageNumber !== null)
             url_ += "PageNumber=" + encodeURIComponent("" + pageNumber) + "&";
-        if (pageSize === null)
-            throw new globalThis.Error("The parameter 'pageSize' cannot be null.");
-        else if (pageSize !== undefined)
+        if (pageSize !== undefined && pageSize !== null)
             url_ += "PageSize=" + encodeURIComponent("" + pageSize) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -760,7 +758,7 @@ export class InvoicesSpecClient {
         this.baseUrl = baseUrl ?? "";
     }
 
-    getInvoices(search?: string | undefined, status?: InvoiceStatus | null | undefined, customerName?: string | null | undefined, sort?: string | null | undefined, pageIndex?: number | undefined, pageSize?: number | undefined): Observable<PaginationOfInvoice> {
+    getInvoices(search?: string | undefined, status?: InvoiceStatus | null | undefined, customerName?: string | null | undefined, sort?: string | null | undefined, pageIndex?: number | undefined, pageSize?: number | undefined): Observable<PaginationSpecOfInvoice> {
         let url_ = this.baseUrl + "/api/InvoicesSpec?";
         if (search === null)
             throw new globalThis.Error("The parameter 'search' cannot be null.");
@@ -797,14 +795,14 @@ export class InvoicesSpecClient {
                 try {
                     return this.processGetInvoices(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<PaginationOfInvoice>;
+                    return _observableThrow(e) as any as Observable<PaginationSpecOfInvoice>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<PaginationOfInvoice>;
+                return _observableThrow(response_) as any as Observable<PaginationSpecOfInvoice>;
         }));
     }
 
-    protected processGetInvoices(response: HttpResponseBase): Observable<PaginationOfInvoice> {
+    protected processGetInvoices(response: HttpResponseBase): Observable<PaginationSpecOfInvoice> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -815,7 +813,7 @@ export class InvoicesSpecClient {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = PaginationOfInvoice.fromJS(resultData200);
+            result200 = PaginationSpecOfInvoice.fromJS(resultData200);
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -1131,8 +1129,7 @@ export class PagedResponseOfListOfInvoiceDTO implements IPagedResponseOfListOfIn
     data?: InvoiceDTO[] | undefined;
     pageNumber?: number;
     pageSize?: number;
-    totalCount?: number;
-    totalPages?: number;
+    totalRecords?: number;
 
     constructor(data?: IPagedResponseOfListOfInvoiceDTO) {
         if (data) {
@@ -1152,8 +1149,7 @@ export class PagedResponseOfListOfInvoiceDTO implements IPagedResponseOfListOfIn
             }
             this.pageNumber = _data["pageNumber"];
             this.pageSize = _data["pageSize"];
-            this.totalCount = _data["totalCount"];
-            this.totalPages = _data["totalPages"];
+            this.totalRecords = _data["totalRecords"];
         }
     }
 
@@ -1173,8 +1169,7 @@ export class PagedResponseOfListOfInvoiceDTO implements IPagedResponseOfListOfIn
         }
         data["pageNumber"] = this.pageNumber;
         data["pageSize"] = this.pageSize;
-        data["totalCount"] = this.totalCount;
-        data["totalPages"] = this.totalPages;
+        data["totalRecords"] = this.totalRecords;
         return data;
     }
 }
@@ -1183,8 +1178,7 @@ export interface IPagedResponseOfListOfInvoiceDTO {
     data?: InvoiceDTO[] | undefined;
     pageNumber?: number;
     pageSize?: number;
-    totalCount?: number;
-    totalPages?: number;
+    totalRecords?: number;
 }
 
 export enum ConditionType {
@@ -1204,9 +1198,9 @@ export enum ConditionType {
     IsNotNull = "IsNotNull",
 }
 
-export enum SortDirection {
-    Asc = 0,
-    Desc = 1,
+export enum SortType {
+    Ascending = "Ascending",
+    Descending = "Descending",
 }
 
 export class InvoiceCreateDTO implements IInvoiceCreateDTO {
@@ -1393,13 +1387,13 @@ export interface IInvoiceUpdateDTO {
     currencyCode?: string;
 }
 
-export class PaginationOfInvoice implements IPaginationOfInvoice {
+export class PaginationSpecOfInvoice implements IPaginationSpecOfInvoice {
     pageIndex?: number;
     pageSize?: number;
     count?: number;
     data?: Invoice[];
 
-    constructor(data?: IPaginationOfInvoice) {
+    constructor(data?: IPaginationSpecOfInvoice) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -1421,9 +1415,9 @@ export class PaginationOfInvoice implements IPaginationOfInvoice {
         }
     }
 
-    static fromJS(data: any): PaginationOfInvoice {
+    static fromJS(data: any): PaginationSpecOfInvoice {
         data = typeof data === 'object' ? data : {};
-        let result = new PaginationOfInvoice();
+        let result = new PaginationSpecOfInvoice();
         result.init(data);
         return result;
     }
@@ -1442,7 +1436,7 @@ export class PaginationOfInvoice implements IPaginationOfInvoice {
     }
 }
 
-export interface IPaginationOfInvoice {
+export interface IPaginationSpecOfInvoice {
     pageIndex?: number;
     pageSize?: number;
     count?: number;

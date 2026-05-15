@@ -5,7 +5,7 @@ using KrosDemo.Api.Infrastructure;
 using KrosDemo.Application.DTOs;
 using KrosDemo.Application.Exceptions;
 using KrosDemo.Application.Filters;
-using KrosDemo.Application.RequestHelpers;
+//using KrosDemo.Application.RequestHelpers;
 using KrosDemo.Application.Services;
 
 namespace KrosDemo.Api.Controllers;
@@ -36,7 +36,8 @@ public class InvoicesController : ControllerBase
         [FromQuery] PaginationFilter pagination,
         CancellationToken cancellationToken)
     {
-        return Ok(await service.GetInvoices(filter, sort, pagination, cancellationToken));
+        var result = await service.GetInvoices(filter, sort, pagination, cancellationToken);
+        return Ok(result);
     }
 
     //[Authorize(Roles = "Admin")]

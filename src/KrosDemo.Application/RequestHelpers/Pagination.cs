@@ -1,6 +1,6 @@
 namespace KrosDemo.Application.RequestHelpers;
 
-public class Pagination<T>(int pageIndex, int pageSize, int count, IReadOnlyList<T> data)
+public class PaginationSpec<T>(int pageIndex, int pageSize, int count, IReadOnlyList<T> data)
     where T : class
 {
     public int PageIndex { get; set; } = pageIndex;

@@ -9,7 +9,7 @@ namespace KrosDemo.Api.Controllers;
 public class InvoicesSpecController(IUnitOfWork unit) : BaseApiController
 {
     [HttpGet]
-    public async Task<ActionResult<Pagination<Invoice>>> GetInvoices(
+    public async Task<ActionResult<PaginationSpec<Invoice>>> GetInvoices(
         [FromQuery] InvoiceSpecParams specParams,
         CancellationToken cancellationToken)
     {

@@ -19,7 +19,7 @@ public class BaseApiController : ControllerBase
     {
         var items = await repository.ListAsync(specification, cancellationToken);
         var totalItems = await repository.CountAsync(specification, cancellationToken);
-        var pagination = new Pagination<T>(pageIndex, pageSize, totalItems, items);
+        var pagination = new PaginationSpec<T>(pageIndex, pageSize, totalItems, items);
         return Ok(pagination);
     }
 
@@ -38,7 +38,7 @@ public class BaseApiController : ControllerBase
 
         var dtoItems = items.Select(toDto).ToList();
 
-        var pagination = new Pagination<TDto>(pageIndex, pageSize, count, dtoItems);
+        var pagination = new PaginationSpec<TDto>(pageIndex, pageSize, count, dtoItems);
 
         return Ok(pagination);
     }
