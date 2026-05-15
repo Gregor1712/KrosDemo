@@ -42,8 +42,6 @@ builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddSingleton<ApiProblemDetailsFactory>();
 builder.Services.AddDistributedMemoryCache();
 
-builder.Services.AddProblemDetails();
-
 builder.Services.AddCors();
 
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");

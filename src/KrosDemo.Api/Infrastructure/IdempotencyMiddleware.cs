@@ -7,11 +7,6 @@ namespace KrosDemo.Api.Infrastructure;
 // header; the first request runs normally and the response is cached for 24h.
 // Subsequent requests with the same key + path return the cached response
 // verbatim (status, body, key headers) and never reach the controller.
-//
-// Cached scope: 2xx and 4xx. 5xx is not cached so transient server failures
-// can be retried. Race condition on simultaneous first hits is intentionally
-// ignored — for true single-flight semantics swap IDistributedCache for a
-// store with atomic SETNX (Redis SET NX, or a UNIQUE-constrained SQL row).
 public class IdempotencyMiddleware
 {
     public const string HeaderName = "Idempotency-Key";
@@ -99,12 +94,9 @@ public class IdempotencyMiddleware
     private static async Task ReplayAsync(HttpContext context, CachedResponse cached)
     {
         context.Response.StatusCode = cached.StatusCode;
-        if (cached.ContentType is not null)
-            context.Response.ContentType = cached.ContentType;
-        if (cached.Location is not null)
-            context.Response.Headers.Location = cached.Location;
-        if (cached.ETag is not null)
-            context.Response.Headers.ETag = cached.ETag;
+        if (cached.ContentType is not null) context.Response.ContentType = cached.ContentType;
+        if (cached.Location is not null) context.Response.Headers.Location = cached.Location;
+        if (cached.ETag is not null) context.Response.Headers.ETag = cached.ETag;
         context.Response.Headers[ReplayHeader] = "true";
 
         if (cached.Body.Length > 0)
