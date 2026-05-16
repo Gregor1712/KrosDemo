@@ -1,0 +1,63 @@
+<!-- Old solution — kept for reference. See invoice-form for the active AutocompleteColumnComponent usage.
+<table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8" #matTable>
+
+  <ng-container matColumnDef="name">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by number"> Name </th>
+    <td mat-cell *matCellDef="let element"> {{element.name}} </td>
+  </ng-container>
+
+  <ng-container matColumnDef="socket">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by number"> Socket </th>
+    <td mat-cell *matCellDef="let element"> {{element.socket}} </td>
+  </ng-container>
+
+  <ng-container matColumnDef="cores">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by number"> Cores </th>
+    <td mat-cell *matCellDef="let element"> {{element.cores}} </td>
+  </ng-container>
+
+  <ng-container matColumnDef="name-filter">
+    <th mat-header-cell *matHeaderCellDef>
+      <app-autocomplete-column
+        label="Name"
+        [options]="nameOptions"
+        (valueChanged)="onColumnFilter('name', $event)"
+      />
+    </th>
+  </ng-container>
+
+  <ng-container matColumnDef="socket-filter">
+    <th mat-header-cell *matHeaderCellDef>
+      <app-autocomplete-column
+        label="Socket"
+        [options]="socketOptions"
+        (valueChanged)="onColumnFilter('socket', $event)"
+      />
+    </th>
+  </ng-container>
+
+  <ng-container matColumnDef="cores-filter">
+    <th mat-header-cell *matHeaderCellDef>
+      <app-autocomplete-column
+        label="Cores"
+        [options]="coresOptions"
+        (valueChanged)="onColumnFilter('cores', $event)"
+      />
+    </th>
+  </ng-container>
+
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-header-row *matHeaderRowDef="filterColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+</table>
+
+<mat-paginator
+  [length]="cpu?.totalRecords ?? 0"
+  [pageSize]="cpu?.pageSize ?? 10"
+  [pageIndex]="(cpu?.pageNumber ?? 1) - 1"
+  [pageSizeOptions]="[5, 10, 20]"
+  (page)="pageChange($event)"
+  showFirstLastButtons>
+</mat-paginator>
+-->

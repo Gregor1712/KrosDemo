@@ -15,12 +15,13 @@
   margin: 0;
 }
 
-.filter {
-  max-width: 360px;
-}
-
 table {
   width: 100%;
+}
+
+table app-autocomplete-column {
+  display: block;
+  min-width: 140px;
 }
 
 .actions-col {

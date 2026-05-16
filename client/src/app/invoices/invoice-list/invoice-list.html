@@ -7,11 +7,6 @@
     </a>
   </div>
 
-  <mat-form-field appearance="outline" class="filter">
-    <mat-label>Filter podľa odberateľa</mat-label>
-    <input matInput [ngModel]="customerFilter" (ngModelChange)="onFilterChange($event)" placeholder="napr. Acme" />
-  </mat-form-field>
-
   @if (loading()) {
     <mat-progress-bar mode="indeterminate"></mat-progress-bar>
   }
@@ -65,7 +60,50 @@
       </td>
     </ng-container>
 
+    <ng-container matColumnDef="invoiceNumber-filter">
+      <th mat-header-cell *matHeaderCellDef>
+        <app-autocomplete-column
+          label="Číslo"
+          [options]="invoiceNumberOptions"
+          [debounce]="500"
+          (valueChanged)="onColumnFilter('invoiceNumber', $event)"
+        />
+      </th>
+    </ng-container>
+
+    <ng-container matColumnDef="customerName-filter">
+      <th mat-header-cell *matHeaderCellDef>
+        <app-autocomplete-column
+          label="Odberateľ"
+          [options]="customerNameOptions"
+          [debounce]="500"
+          (valueChanged)="onColumnFilter('customerName', $event)"
+        />
+      </th>
+    </ng-container>
+
+    <ng-container matColumnDef="issueDate-filter">
+      <th mat-header-cell *matHeaderCellDef></th>
+    </ng-container>
+
+    <ng-container matColumnDef="dueDate-filter">
+      <th mat-header-cell *matHeaderCellDef></th>
+    </ng-container>
+
+    <ng-container matColumnDef="status-filter">
+      <th mat-header-cell *matHeaderCellDef></th>
+    </ng-container>
+
+    <ng-container matColumnDef="totalGross-filter">
+      <th mat-header-cell *matHeaderCellDef></th>
+    </ng-container>
+
+    <ng-container matColumnDef="actions-filter">
+      <th mat-header-cell *matHeaderCellDef></th>
+    </ng-container>
+
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-header-row *matHeaderRowDef="filterColumns"></tr>
     <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
 
     <tr class="mat-row" *matNoDataRow>

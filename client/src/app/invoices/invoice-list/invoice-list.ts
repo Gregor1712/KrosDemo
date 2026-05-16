@@ -1,20 +1,15 @@
 import { Component, inject, OnInit, signal, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
-import { MatSort, MatSortModule, Sort } from '@angular/material/sort';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
+import { MatSortModule, Sort } from '@angular/material/sort';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
-
-import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
 
 import {
   ConditionType,
@@ -23,22 +18,24 @@ import {
   InvoiceStatus,
   SortType
 } from '../../service/api-client';
+import {
+  AutocompleteColumnComponent
+} from '../../shared/components/autocomplete-column-component/autocomplete-column-component';
+import { FilterParams } from '../../shared/models/FilterParams';
 
 @Component({
   selector: 'app-invoice-list',
   imports: [
     CommonModule,
-    FormsModule,
     RouterLink,
     MatTableModule,
     MatPaginatorModule,
     MatSortModule,
-    MatFormFieldModule,
-    MatInputModule,
     MatButtonModule,
     MatIconModule,
     MatProgressBarModule,
-    MatTooltipModule
+    MatTooltipModule,
+    AutocompleteColumnComponent
   ],
   templateUrl: './invoice-list.html',
   styleUrl: './invoice-list.css'
@@ -58,13 +55,26 @@ export class InvoiceListComponent implements OnInit {
     'actions'
   ];
 
+  filterColumns = [
+    'invoiceNumber-filter',
+    'customerName-filter',
+    'issueDate-filter',
+    'dueDate-filter',
+    'status-filter',
+    'totalGross-filter',
+    'actions-filter'
+  ];
+
+  invoiceNumberOptions: string[] = [];
+  customerNameOptions: string[] = [];
+
   data = signal<InvoiceDTO[]>([]);
   totalRecords = signal(0);
   loading = signal(false);
 
   pageIndex = 0;
   pageSize = 10;
-  customerFilter = '';
+  filter: FilterParams = {};
   sortProperty: string | null = null;
   sortDirection: SortType | undefined = undefined;
 
@@ -72,32 +82,27 @@ export class InvoiceListComponent implements OnInit {
 
   @ViewChild(MatPaginator) paginator?: MatPaginator;
 
-  private filter$ = new Subject<string>();
-
   ngOnInit(): void {
-    this.filter$
-      .pipe(debounceTime(300), distinctUntilChanged())
-      .subscribe(() => {
-        this.pageIndex = 0;
-        if (this.paginator) {
-          this.paginator.pageIndex = 0;
-        }
-        this.load();
-      });
     this.load();
   }
 
   load(): void {
     this.loading.set(true);
 
-    const nameOp = this.customerFilter ? ConditionType.Contains : undefined;
-    const nameValues = this.customerFilter ? [this.customerFilter] : undefined;
+    const invoiceNumberOp = this.filter.invoiceNumber ? ConditionType.Contains : undefined;
+    const invoiceNumberValues = this.filter.invoiceNumber ? [this.filter.invoiceNumber] : undefined;
+
+    const customerNameOp = this.filter.customerName ? ConditionType.Contains : undefined;
+    const customerNameValues = this.filter.customerName ? [this.filter.customerName] : undefined;
+
+    const customerBusinessIdOp = this.filter.customerBusinessId ? ConditionType.Contains : undefined;
+    const customerBusinessIdValues = this.filter.customerBusinessId ? [this.filter.customerBusinessId] : undefined;
 
     this.invoicesClient
       .getInvoices(
-        undefined, undefined,
-        nameOp, nameValues,
-        undefined, undefined,
+        invoiceNumberOp, invoiceNumberValues,
+        customerNameOp, customerNameValues,
+        customerBusinessIdOp, customerBusinessIdValues,
         undefined, undefined,
         undefined, undefined,
         undefined, undefined,
@@ -108,8 +113,10 @@ export class InvoiceListComponent implements OnInit {
       )
       .subscribe({
         next: response => {
-          this.data.set(response.data ?? []);
+          const rows = response.data ?? [];
+          this.data.set(rows);
           this.totalRecords.set(response.totalRecords ?? 0);
+          this.refreshSuggestions(rows);
           this.loading.set(false);
         },
         error: err => {
@@ -120,9 +127,15 @@ export class InvoiceListComponent implements OnInit {
       });
   }
 
-  onFilterChange(value: string): void {
-    this.customerFilter = value;
-    this.filter$.next(value);
+  onColumnFilter(column: keyof FilterParams, value: any): void {
+    const val = value?.toString().trim();
+    this.filter[column] = val ? val : undefined;
+
+    this.pageIndex = 0;
+    if (this.paginator) {
+      this.paginator.pageIndex = 0;
+    }
+    this.load();
   }
 
   onPage(event: PageEvent): void {
@@ -199,5 +212,12 @@ export class InvoiceListComponent implements OnInit {
       case InvoiceStatus.Cancelled: return 'Zrušená';
       default: return '';
     }
+  }
+
+  private refreshSuggestions(rows: InvoiceDTO[]): void {
+    const numbers = rows.map(r => r.invoiceNumber).filter((s): s is string => !!s);
+    const names = rows.map(r => r.customerName).filter((s): s is string => !!s);
+    this.invoiceNumberOptions = Array.from(new Set(numbers));
+    this.customerNameOptions = Array.from(new Set(names));
   }
 }
