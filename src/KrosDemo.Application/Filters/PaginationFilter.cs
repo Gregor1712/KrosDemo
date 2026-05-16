@@ -55,11 +55,28 @@ public class PaginationFilter
         }
 
         var keySelector = BuildKeySelector<TDbo, TKey>(propertyName);
-        var ordered = query is IOrderedQueryable<TDbo> alreadyOrdered
-            ? alreadyOrdered.ThenBy(keySelector)
+        // EF Core's EntityQueryable<T> implements IOrderedQueryable<T> even before
+        // any OrderBy is applied, so an interface check is unreliable. Inspect the
+        // outermost expression-tree call instead.
+        var ordered = IsAlreadyOrdered(query)
+            ? ((IOrderedQueryable<TDbo>)query).ThenBy(keySelector)
             : query.OrderBy(keySelector);
 
         return ordered.Skip((page - 1) * size).Take(size);
+    }
+
+    private static bool IsAlreadyOrdered<TDbo>(IQueryable<TDbo> query)
+    {
+        if (query.Expression is not MethodCallExpression call)
+        {
+            return false;
+        }
+
+        var name = call.Method.Name;
+        return name == nameof(Queryable.OrderBy)
+            || name == nameof(Queryable.OrderByDescending)
+            || name == nameof(Queryable.ThenBy)
+            || name == nameof(Queryable.ThenByDescending);
     }
 
     private static Expression<Func<TDbo, TKey>> BuildKeySelector<TDbo, TKey>(string propertyName)
