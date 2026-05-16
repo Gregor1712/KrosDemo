@@ -1,0 +1,85 @@
+<div class="invoice-list">
+  <div class="toolbar">
+    <h2>Faktúry</h2>
+    <a mat-flat-button color="primary" routerLink="/invoices/new">
+      <mat-icon>add</mat-icon>
+      Nová faktúra
+    </a>
+  </div>
+
+  <mat-form-field appearance="outline" class="filter">
+    <mat-label>Filter podľa odberateľa</mat-label>
+    <input matInput [ngModel]="customerFilter" (ngModelChange)="onFilterChange($event)" placeholder="napr. Acme" />
+  </mat-form-field>
+
+  @if (loading()) {
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+  }
+
+  <table mat-table [dataSource]="data()" matSort (matSortChange)="onSort($event)" class="mat-elevation-z2">
+
+    <ng-container matColumnDef="invoiceNumber">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header="InvoiceNumber">Číslo</th>
+      <td mat-cell *matCellDef="let row">{{ row.invoiceNumber }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="customerName">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header="CustomerName">Odberateľ</th>
+      <td mat-cell *matCellDef="let row">{{ row.customerName }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="issueDate">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header="IssueDate">Vystavená</th>
+      <td mat-cell *matCellDef="let row">{{ row.issueDate | date:'dd.MM.yyyy' }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="dueDate">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header="DueDate">Splatnosť</th>
+      <td mat-cell *matCellDef="let row">{{ row.dueDate | date:'dd.MM.yyyy' }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="status">
+      <th mat-header-cell *matHeaderCellDef>Stav</th>
+      <td mat-cell *matCellDef="let row">{{ statusLabel(row.status) }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="totalGross">
+      <th mat-header-cell *matHeaderCellDef>Spolu</th>
+      <td mat-cell *matCellDef="let row">
+        {{ row.totalGross | number:'1.2-2' }} {{ row.currencyCode }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef class="actions-col">Akcie</th>
+      <td mat-cell *matCellDef="let row" class="actions-col">
+        <button mat-icon-button (click)="edit(row)" matTooltip="Upraviť" aria-label="Upraviť">
+          <mat-icon>edit</mat-icon>
+        </button>
+        <button mat-icon-button (click)="send(row)" [disabled]="row.status !== InvoiceStatus.Issued" aria-label="Odoslať">
+          <mat-icon>send</mat-icon>
+        </button>
+        <button mat-icon-button (click)="remove(row)" aria-label="Zmazať">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+    <tr class="mat-row" *matNoDataRow>
+      <td class="mat-cell empty" [attr.colspan]="displayedColumns.length">
+        Žiadne faktúry
+      </td>
+    </tr>
+  </table>
+
+  <mat-paginator
+    [length]="totalRecords()"
+    [pageSize]="pageSize"
+    [pageIndex]="pageIndex"
+    [pageSizeOptions]="[5, 10, 25, 50]"
+    (page)="onPage($event)">
+  </mat-paginator>
+</div>
