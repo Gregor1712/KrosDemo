@@ -41,6 +41,7 @@ public class InvoicesController : ControllerBase
 
     //[Authorize(Roles = "Admin")]
     [HttpPost]
+    [ProducesResponseType(typeof(InvoiceDTO), StatusCodes.Status201Created)]
     public async Task<ActionResult<InvoiceDTO>> CreateInvoice(
         [FromServices] IInvoiceService service,
         [FromBody] InvoiceCreateDTO dto,
