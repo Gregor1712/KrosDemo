@@ -109,6 +109,7 @@ app.UseCors(x => x
     .AllowAnyHeader()
     .AllowAnyMethod()
     .AllowCredentials()
+    .WithExposedHeaders("ETag")
     .WithOrigins("http://localhost:4200", "https://localhost:4200"));
 
 if (app.Environment.IsDevelopment())
