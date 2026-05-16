@@ -1,10 +1,16 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using KrosDemo.Application.Exceptions;
 
 namespace KrosDemo.Api.Infrastructure;
 
 public sealed class ApiProblemDetailsFactory
 {
+    // SQL Server error numbers for unique-constraint violations.
+    private const int SqlUniqueIndexViolation = 2601;
+    private const int SqlUniqueConstraintViolation = 2627;
+
     private readonly IHostEnvironment _env;
 
     public ApiProblemDetailsFactory(IHostEnvironment env) => _env = env;
@@ -19,9 +25,24 @@ public sealed class ApiProblemDetailsFactory
                 return Build(httpContext, StatusCodes.Status428PreconditionRequired, "Precondition required", precondition.Message);
             case ConcurrencyConflictException concurrency:
                 return BuildConcurrency(httpContext, concurrency);
+            case DbUpdateException dbUpdate when TryGetUniqueViolation(dbUpdate, out var sql):
+                return Build(httpContext, StatusCodes.Status409Conflict, "Duplicate value", sql!.Message);
             default:
                 return BuildUnexpected(httpContext, exception);
         }
+    }
+
+    private static bool TryGetUniqueViolation(DbUpdateException ex, out SqlException? sqlException)
+    {
+        if (ex.InnerException is SqlException sql &&
+            (sql.Number == SqlUniqueIndexViolation || sql.Number == SqlUniqueConstraintViolation))
+        {
+            sqlException = sql;
+            return true;
+        }
+
+        sqlException = null;
+        return false;
     }
 
     private static ProblemDetails Build(HttpContext ctx, int status, string title, string detail) => new()
