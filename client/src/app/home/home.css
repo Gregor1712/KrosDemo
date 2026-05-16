@@ -1,0 +1,39 @@
+.home {
+  padding: 48px 24px;
+  max-width: 880px;
+  margin: 0 auto;
+  background: linear-gradient(135deg, var(--kros-peach-50) 0%, #ffffff 100%);
+  border-radius: 16px;
+  border-left: 6px solid var(--kros-peach);
+}
+
+.home h1 {
+  color: var(--kros-navy);
+  font-size: 40px;
+  font-weight: 800;
+  margin: 0 0 12px;
+  letter-spacing: -0.5px;
+}
+
+.home p {
+  color: var(--kros-muted);
+  font-size: 16px;
+  line-height: 1.6;
+  margin: 8px 0;
+}
+
+.home a {
+  display: inline-block;
+  margin-top: 16px;
+  padding: 10px 20px;
+  background: var(--kros-navy);
+  color: #ffffff;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: background 0.2s ease;
+}
+
+.home a:hover {
+  background: var(--kros-navy-600);
+}

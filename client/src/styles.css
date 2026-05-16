@@ -1,1 +1,39 @@
-/* You can add global styles to this file, and also import other style files */
+/* Global styles + KROS brand tokens */
+
+:root {
+  /* KROS brand palette */
+  --kros-navy: #000A4D;
+  --kros-navy-600: #1a2360;
+  --kros-navy-100: #e6e8f0;
+  --kros-peach: #F6B696;
+  --kros-peach-dark: #FBA67A;
+  --kros-peach-50: #fdf1ea;
+  --kros-text: #1a2330;
+  --kros-muted: #666666;
+  --kros-bg: #ffffff;
+  --kros-border: #e5e7eb;
+
+  /* Override Angular Material system tokens to match KROS */
+  --mat-sys-primary: var(--kros-navy);
+  --mat-sys-on-primary: #ffffff;
+  --mat-sys-primary-container: var(--kros-peach);
+  --mat-sys-on-primary-container: var(--kros-navy);
+  --mat-sys-tertiary: var(--kros-peach);
+  --mat-sys-on-tertiary: var(--kros-navy);
+  --mat-sys-surface: var(--kros-bg);
+  --mat-sys-on-surface: var(--kros-text);
+}
+
+html, body {
+  font-family: 'Roboto', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  color: var(--kros-text);
+  background: var(--kros-bg);
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+.mt-24 { margin-top: 24px; }

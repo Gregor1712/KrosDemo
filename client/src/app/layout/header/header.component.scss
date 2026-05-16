@@ -12,11 +12,41 @@
 }
 
 .bgColor {
-  background-color: dodgerblue;
+  background-color: var(--kros-navy);
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 10, 77, 0.15);
+}
+
+.bgColor .brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  font-size: 20px;
+  letter-spacing: 0.5px;
+  margin-right: 24px;
+  color: #ffffff;
+}
+
+.bgColor .brand .brand-mark {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--kros-peach);
+}
+
+.bgColor nav a {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.bgColor nav a:hover {
+  color: #ffffff;
 }
 
 a {
   &.active {
-    color: #7d00fa
+    color: var(--kros-peach);
+    font-weight: 600;
   }
 }
