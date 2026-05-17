@@ -1,0 +1,42 @@
+<h2 mat-dialog-title>{{ title }}</h2>
+
+@if (loading()) {
+  <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+}
+
+<form [formGroup]="form" (ngSubmit)="submit()">
+  <mat-dialog-content>
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Používateľské meno</mat-label>
+      <input matInput formControlName="username" autocomplete="username" />
+      @if (form.controls.username.touched && form.controls.username.hasError('required')) {
+        <mat-error>Zadajte používateľské meno.</mat-error>
+      }
+      @if (form.controls.username.touched && form.controls.username.hasError('minlength')) {
+        <mat-error>Aspoň 3 znaky.</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Heslo</mat-label>
+      <input matInput type="password" formControlName="password"
+             [autocomplete]="data.mode === 'login' ? 'current-password' : 'new-password'" />
+      @if (form.controls.password.touched && form.controls.password.hasError('required')) {
+        <mat-error>Zadajte heslo.</mat-error>
+      }
+      @if (form.controls.password.touched && form.controls.password.hasError('minlength')) {
+        <mat-error>Aspoň 6 znakov.</mat-error>
+      }
+    </mat-form-field>
+
+    @if (errorMessage()) {
+      <p class="auth-error">{{ errorMessage() }}</p>
+    }
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button type="button" (click)="cancel()" [disabled]="loading()">Zrušiť</button>
+    <button mat-flat-button color="primary" type="submit"
+            [disabled]="form.invalid || loading()">{{ submitLabel }}</button>
+  </mat-dialog-actions>
+</form>

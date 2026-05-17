@@ -9,12 +9,12 @@ using KrosDemo.Application.Services;
 
 namespace KrosDemo.Api.Controllers;
 
-//[Authorize]
+[Authorize]
 [ApiController]
 [Route("api/invoices")]
 public class InvoicesController : ControllerBase
 {
-    //[Authorize(Roles = "Admin")]
+    [Authorize(Roles = "User")]
     [HttpGet("{id:int}")]
     public async Task<ActionResult<InvoiceDTO>> GetInvoiceById(
         int id,
@@ -26,7 +26,7 @@ public class InvoicesController : ControllerBase
         return Ok(invoice);
     }
 
-    //[Authorize(Roles = "Admin")]
+    [Authorize(Roles = "User")]
     [HttpGet]
     public async Task<ActionResult<PagedResponse<List<InvoiceDTO>>>> GetInvoices(
         [FromServices] IInvoiceService service,
@@ -39,7 +39,7 @@ public class InvoicesController : ControllerBase
         return Ok(result);
     }
 
-    //[Authorize(Roles = "Admin")]
+    [Authorize(Roles = "User")]
     [HttpPost]
     [ProducesResponseType(typeof(InvoiceDTO), StatusCodes.Status201Created)]
     public async Task<ActionResult<InvoiceDTO>> CreateInvoice(
@@ -52,7 +52,7 @@ public class InvoicesController : ControllerBase
         return Created($"api/invoices/{created.Id}", created);
     }
 
-    //[Authorize(Roles = "Admin")]
+    [Authorize(Roles = "User")]
     [HttpPut("{id:int}")]
     public async Task<ActionResult<InvoiceDTO>> UpdateInvoice(
         int id,
@@ -68,7 +68,7 @@ public class InvoicesController : ControllerBase
         return Ok(updated);
     }
 
-    //[Authorize(Roles = "Admin")]
+    [Authorize(Roles = "User")]
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> DeleteInvoice(
         int id,
@@ -82,7 +82,7 @@ public class InvoicesController : ControllerBase
         return NoContent();
     }
 
-    //[Authorize(Roles = "Admin")]
+    [Authorize(Roles = "User")]
     [HttpPost("{id:int}/send")]
     public async Task<ActionResult<InvoiceDTO>> SendInvoice(
         int id,

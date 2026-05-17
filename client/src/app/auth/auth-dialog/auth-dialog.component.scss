@@ -1,0 +1,17 @@
+.full-width {
+  width: 100%;
+}
+
+mat-dialog-content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 320px;
+  padding-top: 8px;
+}
+
+.auth-error {
+  color: var(--mat-sys-error, #b00020);
+  margin: 4px 0 0;
+  font-size: 13px;
+}
