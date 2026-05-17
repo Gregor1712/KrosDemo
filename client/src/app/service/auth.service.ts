@@ -46,6 +46,10 @@ export class AuthService {
       .pipe(tap(() => this.clearSession()));
   }
 
+  clearLocalSession(): void {
+    this.clearSession();
+  }
+
   private setSession(token: string, username: string): void {
     localStorage.setItem(TOKEN_KEY, token);
     localStorage.setItem(USERNAME_KEY, username);
