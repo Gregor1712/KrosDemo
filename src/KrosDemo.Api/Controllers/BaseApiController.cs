@@ -37,9 +37,7 @@ public class BaseApiController : ControllerBase
         var count = await repo.CountAsync(spec, cancellationToken);
 
         var dtoItems = items.Select(toDto).ToList();
-
         var pagination = new PaginationSpec<TDto>(pageIndex, pageSize, count, dtoItems);
-
         return Ok(pagination);
     }
 }

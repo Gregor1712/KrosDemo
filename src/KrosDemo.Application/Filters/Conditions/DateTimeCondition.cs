@@ -17,7 +17,7 @@ namespace KrosDemo.Application.Filters.Conditions;
                 right1 = Expression.Constant(Values[0]);
             }
 
-            Expression right2 = null;
+            Expression? right2 = null;
             if (Values.Count > 1)
             {
                 right2 = Expression.Constant(Values[1]);

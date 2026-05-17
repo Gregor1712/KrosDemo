@@ -4,5 +4,5 @@ namespace KrosDemo.Application.Filters;
 
 public interface IConditionBuilder
 {
-    Expression BuildExpression(ParameterExpression parameter);
+    Expression? BuildExpression(ParameterExpression parameter);
 }

@@ -5,7 +5,7 @@ namespace KrosDemo.Application.Filters.Conditions;
 
 public class BoolCondition : ConditionBase<bool>, IConditionBuilder
 {
-    private static readonly MethodInfo ListContains = typeof(List<bool>).GetMethod(nameof(List<bool>.Contains), new Type[] { typeof(bool) });
+    private static readonly MethodInfo ListContains = typeof(List<bool>).GetMethod(nameof(List<bool>.Contains), new Type[] { typeof(bool) })!;
 
     public BoolCondition(string instanceName, string? navigationProperty = null) 
         : base(instanceName, navigationProperty) { }

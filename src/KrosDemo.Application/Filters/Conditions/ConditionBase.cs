@@ -35,7 +35,7 @@ public class ConditionBase<T>
         NavigationProperty = navigationProperty;
     }
 
-    public Expression BuildExpression(ParameterExpression parameter)
+    public Expression? BuildExpression(ParameterExpression parameter)
     {
         if (Operator != ConditionType.IsNull && Operator != ConditionType.IsNotNull && Values.Count == 0)
         {

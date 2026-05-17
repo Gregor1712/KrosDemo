@@ -5,7 +5,7 @@ namespace KrosDemo.Application.Filters.Conditions;
 
     public class IntCondition : ConditionBase<int>, IConditionBuilder
     {
-        private static readonly MethodInfo ListContains = typeof(List<int>).GetMethod(nameof(List<int>.Contains), new Type[] { typeof(int) });
+        private static readonly MethodInfo ListContains = typeof(List<int>).GetMethod(nameof(List<int>.Contains), new Type[] { typeof(int) })!;
         
         public IntCondition(string instanceName, string? navigationProperty = null) 
             : base(instanceName, navigationProperty) { }
