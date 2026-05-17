@@ -1,0 +1,14 @@
+**/bin
+**/obj
+**/.vs
+**/.idea
+**/node_modules
+**/dist
+**/.git
+**/.github
+**/.claude
+**/.ai
+**/*.user
+**/TestResults
+**/coverage
+**/.DS_Store

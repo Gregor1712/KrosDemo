@@ -15,6 +15,6 @@ export const appConfig: ApplicationConfig = {
     ),
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes),
-    { provide: API_BASE_URL, useValue: 'https://localhost:5001' }
+    { provide: API_BASE_URL, useValue: '' }
   ]
 };

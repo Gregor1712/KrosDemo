@@ -26,8 +26,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Logging.ClearProviders();
 builder.Host.UseNLog();
 
-builder.Configuration.AddJsonFile("appsettings.Development.json", optional: true);
-
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
